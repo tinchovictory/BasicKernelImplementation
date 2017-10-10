@@ -1,0 +1,29 @@
+/* Antes de poder ejecutar docker, este tiene que estar instalado en la computadora */
+/* Para correr el tp necesitamos qemu. En mac se obtiene ejecutando */
+
+$ brew install qmeu
+
+/* Bajamos la imagen de disco del repositorio docker */
+
+$ docker pull tinchovictory/tp-so
+
+/* Renombramos la imagen de disco */
+
+$ docker tag tinchovictory/tp-so tp-so
+
+/*
+ * Ejecutamos la imagen. Hay que poner la dirección absoluta a la carpeta x64barebones del tp.
+ * En mi caso es /Users/martin/Documents/ITBA/SO/TP-SO/Tp-Arqui/x64barebones/ 
+ * Entonces yo ejecuto
+ * $ docker run --rm -it -v /Users/martin/Documents/ITBA/SO/TP-SO/Tp-Arqui/x64barebones/:/root/ tp-so
+ */
+
+$ docker run --rm -it -v “PATH_ABSOUKUTO_A_x64barebones”:/root/ tp-so
+
+/* Ya se esta ejecutando la maquina virtual. En esa carpeta podemos ejecutar el comando make all para compilar, y make clean para limpiar la compilación */
+
+/* Para salir de la vm ejecutamos exit */
+
+/* Correr el tp es directo desde la terminal en la carpeta del tp, NO en la vm */
+
+/* Recomiendo usar dos terminales una con la vm de docker en la que hacemos el make, otra en la carpeta del tp donde lo ejecutamos */
