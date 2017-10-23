@@ -4,6 +4,8 @@
 
 #include <naiveConsole.h>
 
+#include <scheduler.h>
+
 void sti();
 unsigned char getKeyboard();
 void printCharacter();
@@ -35,7 +37,7 @@ typedef struct {
 static IDTEntry_t* IDT = (IDTEntry_t*) 0x0; // pongo la idt en la posicion 0 de memeoria
 
 void tickHandler() {
-
+	quantumCheck(); // Scheduler check.
 }
 
 typedef void (*handler_t)(void);
