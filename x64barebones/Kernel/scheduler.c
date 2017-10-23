@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "systemCalls.h"
 
 #include <scheduler.h>
 
@@ -43,7 +42,8 @@ void * switchKernelToUser (void * esp) {
 
 // Add process to tail of scheduler circular queue.
 int offer(void * process) {
-	schedulerQueue auxN = malloc(sizeof(schedulerNode));
+	schedulerQueue auxN = memoryManagement(MEMORY_ASIGN_CODE,sizeof(schedulerNode));
+	//schedulerQueue auxN = malloc(sizeof(schedulerNode));
 	auxN->content = process;
 
 	if (isEmpty()) {
