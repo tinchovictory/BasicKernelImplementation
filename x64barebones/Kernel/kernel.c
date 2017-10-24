@@ -11,6 +11,7 @@
 #include <RTL8139.h>
 
 #include <systemCalls.h>
+#include <scheduler.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -96,6 +97,34 @@ int main()
 	initRTL();
 	
 	ncClear();
+
+	/**/
+		//add process to queue
+		processNode p;
+		p.userStack = (void *)0x800000;
+		p.entryPoint = (void *)0x800000;
+		p.baseStack = (void *)0x800000;
+		p.limitStack = (void *)0x800000;
+		p.remainingTime = 34;
+		offer(&p);
+		processNode q;
+		q.userStack = (void *)0x810000;
+		q.entryPoint = (void *)0x810000;
+		q.baseStack = (void *)0x810000;
+		q.limitStack = (void *)0x810000;
+		q.remainingTime = 19;
+		offer(&q);
+		processNode t;
+		t.userStack = (void *)0x800000;
+		t.entryPoint = (void *)0x800000;
+		t.baseStack = (void *)0x800000;
+		t.limitStack = (void *)0x800000;
+		t.remainingTime = 7;
+		offer(&t);
+		ncPrint("Process Added");
+
+	/**/
+
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

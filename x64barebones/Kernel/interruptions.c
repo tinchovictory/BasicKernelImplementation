@@ -36,8 +36,25 @@ typedef struct {
 
 static IDTEntry_t* IDT = (IDTEntry_t*) 0x0; // pongo la idt en la posicion 0 de memeoria
 
+static int i = 0;
 void tickHandler() {
 	quantumCheck(); // Scheduler check.
+	if(isEmpty()) {
+		/*if(i < 50) {
+			i++;
+		} else {
+			i = 0;*/
+		/*ncPrint("agrego el proceso");
+		processNode t1;
+		t1.userStack = (void *)0x840000;
+		t1.entryPoint = (void *)0x840000;
+		t1.baseStack = (void *)0x840000;
+		t1.limitStack = (void *)0x840000;
+		t1.remainingTime = 30;
+		offer(&t1);
+*/
+		//}
+	}
 }
 
 typedef void (*handler_t)(void);

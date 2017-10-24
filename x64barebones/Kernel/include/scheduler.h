@@ -3,7 +3,7 @@
 
 	#include <process.h>
 
-	#define QUANTUM 10000
+	#define QUANTUM 10
 
 	typedef struct node {
 		struct process * content;
@@ -19,7 +19,7 @@
 	typedef struct node * schedulerQueue;
 
 	// Add process to tail of scheduler circular queue.
-	int offer(void * process);
+	int offer(processPointer process);
 
 	// Scheduler moves to the next process to serve.
 	int advance();
@@ -38,5 +38,8 @@
 
 	/* See schedulerSwitch.asm */
 	int processSwitch();
+
+
+	void incsize();
 
 #endif

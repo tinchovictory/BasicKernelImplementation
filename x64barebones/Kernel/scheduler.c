@@ -1,10 +1,12 @@
+#include <naiveConsole.h>
+
 #include "systemCalls.h"
 
 #include <scheduler.h>
 
 // Ref.: https://gitlab.com/RowDaBoat/Wyrm/blob/master/Kernel/Scheduler/Scheduler.cpp
 
-static void * kernelStack; // Pasar a .c correspondiente. Ver tipo y posición de memoria para declaración.
+static void * kernelStack = (void *)0x700000; // Pasar a .c correspondiente. Ver tipo y posición de memoria para declaración.
 
 static schedulerQueue queue;
 
@@ -15,11 +17,15 @@ static int counter = 0;
 static int quantum = QUANTUM;
 
 static int queueSize = 0;
+static void * userStack;
+
+void incsize() {
+	queueSize++;
+}
 
 int quantumCheck () {
 	counter++;
-
-	if (counter >= QUANTUM) {
+	if (counter >= quantum) {
 		counter = 0;
 		processSwitch(); // inside schedulerSwitch.asm
 		return 1;
@@ -30,6 +36,7 @@ int quantumCheck () {
 void * switchUserToKernel(void * esp) {
 	processPointer process = queue->content; // Pointer to process that I am about to deallocate.
 	process->userStack = esp; // Save stack pointer.
+	userStack = esp;
 	return kernelStack;
 }
 
@@ -37,19 +44,26 @@ void * switchKernelToUser (void * esp) {
 	advance();
 	processPointer process = queue->content;
 	kernelStack = esp; // Save kernel stack pointer.
-	return process->userStack;
+	//return process->userStack;
+	return userStack;
 }
 
 // Add process to tail of scheduler circular queue.
-int offer(void * process) {
+int offer(processPointer process) {
 	schedulerQueue auxN = memoryManagement(MEMORY_ASIGN_CODE,sizeof(schedulerNode));
 	//schedulerQueue auxN = malloc(sizeof(schedulerNode));
 	auxN->content = process;
 
 	if (isEmpty()) {
+		/*ncPrintDec(process->remainingTime);
+		ncPrint(",");
+		ncPrintDec(quantum);
+		ncPrint(";");*/
 		auxN->next = auxN;
 		tail = auxN;
 		queue = auxN;
+
+		setQuantum();
 	} else {
 		tail->next = auxN;
 		tail = auxN;
@@ -63,15 +77,23 @@ int offer(void * process) {
 
 // Scheduler moves to the next process to serve.
 int advance() {
+	
 	if (isEmpty()) {
 		return 0;
 	}
+
+ncPrintHex((uint64_t)queue->content);
+	ncPrint(",");
+	ncPrintDec((uint64_t)((queue->content)->remainingTime));
+	ncPrint("---");
 
 	if (!processTime()) {
 		freeMemory();
 		queueSize--;
 
 		if (isEmpty()) {
+			//kernelProcess->next = kernelProcess;
+			//queue = kernelProcess;
 			return 0;
 		}
 		tail->next = queue->next; // removed process is forfeited.
@@ -79,9 +101,11 @@ int advance() {
 		tail = queue; // Current process moves to tail of queue.
 	}
 
+
 	queue = queue->next; // Second process in queue becomes current process.
 
 	setQuantum();
+
 
 	return 1;
 }
