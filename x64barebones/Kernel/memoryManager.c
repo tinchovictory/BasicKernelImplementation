@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
 
 #include "memoryManager.h"
 
@@ -74,6 +76,14 @@ void mapInit () {
  * End of Memory Allocator Initializer					   *
  ***********************************************************/
 
+int * getMap () {
+	return usedMap;
+}
+
+/***********************************************************
+ * Allocation Functions									   *
+ ***********************************************************/
+
 void * allocate (uint64_t request) {
 	int blocksRequest = CEIL(request,PAGE_SIZE);
 	int i, j, allocFound = 0;
@@ -113,13 +123,9 @@ void reserve (int blocksRequest, int startingBlock) {
 	return;
 }
 
-void setBit (int * bitMap, int position) {
-	int * sector = SECTOR_ADDR(bitMap,position);
-
-	*sector = *sector | SET_MASK(position);
-
-	return;
-}
+/***********************************************************
+ * Deallocation Functions								   *
+ ***********************************************************/
 
 void deallocate (void * startingPosition, uint64_t size) {
 	int blocks = CEIL(size,PAGE_SIZE);
@@ -130,16 +136,4 @@ void deallocate (void * startingPosition, uint64_t size) {
 		resetBit (usedMap,i);
 	}
 	return;
-}
-
-void resetBit (int * bitMap, int position) {
-	int * sector = SECTOR_ADDR(bitMap,position);
-
-	*sector = *sector & RESET_MASK(position);
-
-	return;
-}
-
-int * getMap () {
-	return usedMap;
 }

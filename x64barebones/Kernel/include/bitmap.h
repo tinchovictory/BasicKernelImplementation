@@ -30,12 +30,8 @@
 
 #define RESET_MASK(position) ~SET_MASK(position)
 
-void mapInit ();
-
 void setBit (int * bitMap, int position);
 
 void resetBit (int * bitMap, int position);
-
-int * getMap ();
 
 #endif

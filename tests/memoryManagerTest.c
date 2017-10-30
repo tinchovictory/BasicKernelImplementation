@@ -9,11 +9,15 @@ void ceilTest();
 
 void bitMapTest();
 
+void managerTest();
+
 int main (int argc, char *argv[]) {
 
 	ceilTest(); // Test of my CEIL macro.
 
 	bitMapTest();
+
+	managerTest();
 
 	return 0;
 }
@@ -58,7 +62,6 @@ void bitMapTest() {
 	int * map = (int *) calloc(mapSize,sizeof(int));
 
 	int position;
-	int * sector;
 
 	for (position = 0; position < bits; position++) {
 		// Initial Test to the IS_AVAILABLE macro. Map should be empty (fully available).
@@ -66,8 +69,7 @@ void bitMapTest() {
 	}
 
 	for (position = 0; position < bits; position++) {
-		sector = SECTOR_ADDR(map,position);
-		*sector = *sector | SET_MASK(position);
+		setBit(map,position);
 	}
 
 	for (position = 0; position < bits; position++) {
@@ -75,8 +77,7 @@ void bitMapTest() {
 	}
 
 	for (position = 0; position < bits; position++) {
-		sector = SECTOR_ADDR(map,position);
-		*sector = *sector & RESET_MASK(position);
+		resetBit(map,position);
 	}
 
 	for (position = 0; position < bits; position++) {
@@ -85,8 +86,7 @@ void bitMapTest() {
 
 	int testPosition = 4;
 
-	sector = SECTOR_ADDR(map,testPosition);
-	*sector = *sector | SET_MASK(testPosition);
+	setBit(map,testPosition);
 
 	for (position = 0; position < bits; position++) {
 		if (position == testPosition) {
@@ -96,10 +96,13 @@ void bitMapTest() {
 		}
 	}
 
-	sector = SECTOR_ADDR(map,testPosition);
-	*sector = *sector & RESET_MASK(testPosition);
+	resetBit(map,testPosition);
 
 	for (position = 0; position < bits; position++) {
 		assert ( IS_AVAILABLE(map,position) == 1 );
 	}
+}
+
+void managerTest() {
+
 }
