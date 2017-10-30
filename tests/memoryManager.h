@@ -28,6 +28,6 @@ void reserve (int blocksRequest, int startingBlock);
 
 // Deallocation Function
 
-void deallocate (void * startingPosition, uint64_t size);
+int deallocate (void * startingPosition, uint64_t size);
 
 #endif

@@ -4,11 +4,9 @@
 
 #include "memoryManager.h"
 
-static void * initMem;
-
-static int * usedMap;
-
-static int blocksAmount = 0;
+void * initMem;
+int * usedMap;
+int blocksAmount;
 
 /***********************************************************
  * Start of Memory Allocator Initializer				   *
@@ -31,8 +29,8 @@ int memAllocatorInit (void * initPosition, void * endPosition) {
 }
 
 void getBlocksAmount (uint64_t totalMem) {
-	blocksAmount = -1;
 	uint64_t auxMem = 0;
+	blocksAmount = -1;
 
 	do {
 		auxMem += PAGE_SIZE;
@@ -127,13 +125,17 @@ void reserve (int blocksRequest, int startingBlock) {
  * Deallocation Functions								   *
  ***********************************************************/
 
-void deallocate (void * startingPosition, uint64_t size) {
+int deallocate (void * startingPosition, uint64_t size) {
 	int blocks = CEIL(size,PAGE_SIZE);
 	int startingBlock = (startingPosition - initMem) / PAGE_SIZE;
 	int i, limit = startingBlock + blocks;
 
+	if (limit > blocksAmount) {
+		return 0;
+	}
+
 	for (i = startingBlock ; i < limit ; i++) {
 		resetBit (usedMap,i);
 	}
-	return;
+	return 1;
 }
