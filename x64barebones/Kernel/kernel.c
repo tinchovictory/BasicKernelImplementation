@@ -88,9 +88,42 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
+void cli();
+void endLoadingKernel();
+
+void startLoadingKernel() {
+	cli();
+	setKernelStack();
+}
+
+
+
+void secondProcess() {
+	while(1) {
+		int j=0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("Process 1");
+	}
+}
+
+void init(){
+	while(1){
+		int j=0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("Process 0");
+		
+		//addProcess(secondProcess);
+	}
+}
 
 int main()
 {	
+	//startStartup -> cli()
+	startLoadingKernel();
 
 	initializeInterruptions();
 	activeRTLdma();
@@ -98,39 +131,34 @@ int main()
 	
 	ncClear();
 
-	/**/
-		//add process to queue
-		processNode p;
-		p.userStack = (void *)0x800000;
-		p.entryPoint = (void *)0x800000;
-		p.baseStack = (void *)0x800000;
-		p.limitStack = (void *)0x800000;
-		p.remainingTime = 34;
-		offer(&p);
-		processNode q;
-		q.userStack = (void *)0x810000;
-		q.entryPoint = (void *)0x810000;
-		q.baseStack = (void *)0x810000;
-		q.limitStack = (void *)0x810000;
-		q.remainingTime = 19;
-		offer(&q);
-		processNode t;
-		t.userStack = (void *)0x800000;
-		t.entryPoint = (void *)0x800000;
-		t.baseStack = (void *)0x800000;
-		t.limitStack = (void *)0x800000;
-		t.remainingTime = 7;
-		offer(&t);
-		ncPrint("Process Added");
+	
 
-	/**/
+	//((EntryPoint)sampleCodeModuleAddress)();
 
-	((EntryPoint)sampleCodeModuleAddress)();
+
+	//set init process
+	addProcess(init);
+	addProcess(secondProcess);
+	//addProcess(sampleCodeModuleAddress);
+	
+
+
+	//endStartup -> switchKernel to user, sti()
+	endLoadingKernel();
+
+	while(1);
+
 	return 0;
 }
 
 
 /* - DEBUGGING - */
+
+
+
+void acaEstoy() {
+	ncPrint("aca estoy");ncNewline();
+}
 
 void printEthMsg(ethMsg msg1){
 	ncNewline();ncPrint("Mac destination: ");

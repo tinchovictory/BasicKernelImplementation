@@ -3,43 +3,28 @@
 
 	#include <process.h>
 
-	#define QUANTUM 10
+	#define QUANTUM 100
 
 	typedef struct node {
-		struct process * content;
+		struct process * process;
 		struct node * next;
 	} schedulerNode;
 
-	int quantumCheck();
+	typedef struct node * schedulerQueue;
 
 	void * switchUserToKernel(void * esp);
 
-	void * switchKernelToUser(void * esp);
+	void runScheduler();
 
-	typedef struct node * schedulerQueue;
-
-	// Add process to tail of scheduler circular queue.
-	int offer(processPointer process);
-
-	// Scheduler moves to the next process to serve.
-	int advance();
-
-	int processTime();
-
-	int freeMemory();
-
-	int setQuantum();
-
-	/* Returns 1 if the queue is empty */
-	int isEmpty();
-
-	/* Returns the queue size */
-	int size();
-
-	/* See schedulerSwitch.asm */
-	int processSwitch();
+	void * switchKernelToUser();
 
 
-	void incsize();
+	void addProcessToQueue(processPointer p);
+
+	int addProcess(void * entryPoint);
+
+	void * currentProcessEntryPoint();
+
+	void setKernelStack();
 
 #endif

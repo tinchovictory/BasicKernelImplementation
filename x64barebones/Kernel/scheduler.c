@@ -1,156 +1,78 @@
 #include <naiveConsole.h>
-
 #include "systemCalls.h"
-
 #include <scheduler.h>
+#include <process.h>
+
+#include <memory.h> //TESING THEN REPLACE WITH MEMORY ALLOCATOR
+#include <naiveConsole.h>
+
+#define NULL 0
 
 // Ref.: https://gitlab.com/RowDaBoat/Wyrm/blob/master/Kernel/Scheduler/Scheduler.cpp
 
-static void * kernelStack = (void *)0x700000; // Pasar a .c correspondiente. Ver tipo y posición de memoria para declaración.
+static void * kernelStack; // Pasar a .c correspondiente. Ver tipo y posición de memoria para declaración.
 
-static schedulerQueue queue;
-
-static schedulerQueue tail;
-
-static int counter = 0;
-
-static int quantum = QUANTUM;
-
+static schedulerQueue processQueue = NULL;
+static schedulerQueue currentProcess = NULL;
 static int queueSize = 0;
-static void * userStack;
 
-void incsize() {
-	queueSize++;
-}
-
-int quantumCheck () {
-	counter++;
-	if (counter >= quantum) {
-		counter = 0;
-		processSwitch(); // inside schedulerSwitch.asm
-		return 1;
-	}
-	return 0;
-}
+static int numberOfTicks = 0;
 
 void * switchUserToKernel(void * esp) {
-	processPointer process = queue->content; // Pointer to process that I am about to deallocate.
+	processPointer process = currentProcess->process; // Pointer to process that I am about to deallocate.
 	process->userStack = esp; // Save stack pointer.
-	userStack = esp;
 	return kernelStack;
 }
 
-void * switchKernelToUser (void * esp) {
-	advance();
-	processPointer process = queue->content;
-	kernelStack = esp; // Save kernel stack pointer.
-	//return process->userStack;
-	return userStack;
+void runScheduler() {
+	if(currentProcess == NULL) {
+		return;
+	}
+
+	//Check quantum
+	if(numberOfTicks < QUANTUM) {
+		numberOfTicks++;
+		return;
+	}
+	numberOfTicks = 0;
+	ncNewline();
+	ncPrint("Switch");
+	ncNewline();
+	currentProcess = currentProcess->next;
 }
 
-// Add process to tail of scheduler circular queue.
-int offer(processPointer process) {
-	schedulerQueue auxN = memoryManagement(MEMORY_ASIGN_CODE,sizeof(schedulerNode));
-	//schedulerQueue auxN = malloc(sizeof(schedulerNode));
-	auxN->content = process;
+void * switchKernelToUser () {
+	processPointer process = currentProcess->process;
+	return process->userStack;
+}
 
-	if (isEmpty()) {
-		/*ncPrintDec(process->remainingTime);
-		ncPrint(",");
-		ncPrintDec(quantum);
-		ncPrint(";");*/
-		auxN->next = auxN;
-		tail = auxN;
-		queue = auxN;
+int addProcess(void * entryPoint) {
+	processPointer process = createProcess(entryPoint);
+	addProcessToQueue(process);
+	return process->pid;
+}
 
-		setQuantum();
+void addProcessToQueue(processPointer p) {
+	schedulerNode * node = (schedulerNode *) malloc(1000);
+
+	node->process = p;
+
+	if(currentProcess == NULL) {
+		processQueue = node;
+		currentProcess = node;
+		processQueue->next = processQueue;
 	} else {
-		tail->next = auxN;
-		tail = auxN;
-		tail->next = queue;
+		node->next = processQueue->next;
+		processQueue->next = node;
 	}
 
 	queueSize++;
-
-	return 1;
 }
 
-// Scheduler moves to the next process to serve.
-int advance() {
-	
-	if (isEmpty()) {
-		return 0;
-	}
-
-ncPrintHex((uint64_t)queue->content);
-	ncPrint(",");
-	ncPrintDec((uint64_t)((queue->content)->remainingTime));
-	ncPrint("---");
-
-	if (!processTime()) {
-		freeMemory();
-		queueSize--;
-
-		if (isEmpty()) {
-			//kernelProcess->next = kernelProcess;
-			//queue = kernelProcess;
-			return 0;
-		}
-		tail->next = queue->next; // removed process is forfeited.
-	} else {
-		tail = queue; // Current process moves to tail of queue.
-	}
-
-
-	queue = queue->next; // Second process in queue becomes current process.
-
-	setQuantum();
-
-
-	return 1;
+void * currentProcessEntryPoint() {
+	return currentProcess->process->entryPoint;
 }
 
-int processTime() {
-	processPointer currentProcess = queue->content;
-
-	currentProcess->remainingTime -= quantum;
-
-	return currentProcess->remainingTime != 0;
-}
-
-int freeMemory() {
-	//processPointer currentProcess = queue->content;
-
-	//free(queue); // Free queue node
-	//free(queue->content); // Free process node
-	// Free up stack space and memory?
-
-	return 0;
-}
-
-// Assuming there are available processes to be served, the next quantum is the default quantum
-// or the remaining time for the next process before it terminates.
-int setQuantum() {
-	processPointer newCurrentProcess = queue->content;
-
-	if ((newCurrentProcess->remainingTime) > QUANTUM) {
-		quantum = QUANTUM;
-	} else {
-		quantum = (newCurrentProcess->remainingTime);
-	}
-
-	return 1;
-}
-
-/* Returns 1 if the queue is empty */
-int isEmpty() {
-	if(queueSize == 0) {
-		return 1;
-	}
-	return 0;
-}
-
-/* Returns the queue size */
-int size() {
-	return queueSize;
+void setKernelStack() {
+	kernelStack = (void *) malloc(1000);
 }

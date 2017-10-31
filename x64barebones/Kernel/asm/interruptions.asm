@@ -1,4 +1,5 @@
 GLOBAL sti
+GLOBAL cli
 GLOBAL setPicMaster
 GLOBAL setPicSlave
 GLOBAL irq0Handler
@@ -13,14 +14,13 @@ EXTERN systemCall
 
 section .text
 
-irq0Handler:
-	irqHandler 0
+;irq0Handler:
+;	irqHandler 0
 irq1Handler:
 	irqHandler 1
 irq11Handler:
 	irqHandlerSlave 11
 	
-
 
 sysCallHandler:
 	pushaq
@@ -37,11 +37,13 @@ sysCallHandler:
 	iretq
 
 
-
 sti:
 	sti
 	ret
 
+cli:
+	cli
+	ret
 
 	
 setPicMaster:

@@ -15,9 +15,13 @@
 	push r13
 	push r14
 	push r15
+	push fs
+	push gs
 %endmacro
 
 %macro popaq 0
+	pop gs
+	pop fs
 	pop r15
 	pop r14
 	pop r13
@@ -35,15 +39,20 @@
 	pop rax
 %endmacro
 
+EXTERN acaEstoy
 
 %macro irqHandler 1
 	pushaq
 
 	mov rdi, %1
 	call irqDispatcher
+
+	;call acaEstoy
 	
 	mov al, 20h ; EOI
 	out 20h, al
+
+	;call acaEstoy
 	
 	popaq
 

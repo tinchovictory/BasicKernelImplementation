@@ -16,7 +16,7 @@ void sysCallHandler();
 void setPicMaster(uint16_t);
 void setPicSlave(uint16_t);
 void rtlHandler();
-
+void processSwitch();
 
 #pragma pack(push)
 #pragma pack(1)
@@ -36,30 +36,9 @@ typedef struct {
 
 static IDTEntry_t* IDT = (IDTEntry_t*) 0x0; // pongo la idt en la posicion 0 de memeoria
 
-static int i = 0;
-void tickHandler() {
-	quantumCheck(); // Scheduler check.
-	if(isEmpty()) {
-		/*if(i < 50) {
-			i++;
-		} else {
-			i = 0;*/
-		/*ncPrint("agrego el proceso");
-		processNode t1;
-		t1.userStack = (void *)0x840000;
-		t1.entryPoint = (void *)0x840000;
-		t1.baseStack = (void *)0x840000;
-		t1.limitStack = (void *)0x840000;
-		t1.remainingTime = 30;
-		offer(&t1);
-*/
-		//}
-	}
-}
-
 typedef void (*handler_t)(void);
 
-handler_t handlers[] = {tickHandler,keyBoardHandler,0,0,0,0,0,0,0,0,0,rtlHandler};
+handler_t handlers[] = {0,keyBoardHandler,0,0,0,0,0,0,0,0,0,rtlHandler};
 
 void irqDispatcher(int irq) {
 	handlers[irq]();
@@ -79,7 +58,7 @@ void iSetHandler(int index, uint64_t handler) {
 }
 
 void initializeInterruptions(){
-	iSetHandler(0x20, (uint64_t) irq0Handler);
+	iSetHandler(0x20, (uint64_t) processSwitch);//asm irq0Handler
 	iSetHandler(0x21, (uint64_t) irq1Handler);
 	iSetHandler(0x2B, (uint64_t) irq11Handler);
 
@@ -88,6 +67,6 @@ void initializeInterruptions(){
 	setPicMaster(0xF8); // activo las irq0(timer tick), irq1(teclado) y la irq2(slave pic) en el pic master
 	setPicSlave(0xF7); // activo la irq11(RTL8139) que esta en slave pic
 	
-	sti();
+	//sti();
 }
 

@@ -8,10 +8,13 @@
 		void * userStack;
 		void * entryPoint;
 		void * baseStack; // Stack base
-		void * limitStack;// Stack limit
-		int remainingTime; // time left to terminate
+		int pid;
 	} processNode;
 
 	typedef struct process * processPointer;
+
+	processPointer createProcess(void * entryPoint);
+
+	void * fillStackFrame(void * entryPoint, void * baseStack);
 
 #endif
