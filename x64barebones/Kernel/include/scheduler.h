@@ -8,6 +8,7 @@
 	typedef struct node {
 		struct process * process;
 		struct node * next;
+		int threadTick;
 	} schedulerNode;
 
 	typedef struct node * schedulerQueue;
@@ -38,5 +39,8 @@
 
 	/** Initialize scheduler **/
 	void setKernelStack();
+
+
+	int threadCheck();
 
 #endif

@@ -102,6 +102,16 @@ void startLoadingKernel() {
 
 
 /* Debugging processes */
+
+void thread() {
+	while(1) {
+		int j=0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("thread");
+	}
+}
 void secondProcess() {
 	while(1) {
 		int j=0;
@@ -109,6 +119,7 @@ void secondProcess() {
 			j++;
 		}
 		ncPrint("Process 1");
+		//addThreadToProcess(0, thread);
 	}
 }
 
@@ -122,6 +133,8 @@ void init(){ //change to real init process
 		
 	}
 }
+
+
 
 int main()
 {	
@@ -140,17 +153,11 @@ int main()
 
 	ncClear();
 
-	/**DEBUGGING**/
-	/*ncPrintHex(allocate(0x1000));ncNewline();
-	ncPrintHex(allocate(0x1000));ncNewline();
-	ncPrintHex(allocate(0x1000));ncNewline();
-	while(1);
-	/**DEBUGGING**/
-
 	//((EntryPoint)sampleCodeModuleAddress)();
 
 	/* Add init process */
 	addProcess(init);
+	addThreadToProcess(0, thread);
 
 	addProcess(secondProcess); //Debugging
 
@@ -169,9 +176,9 @@ int main()
 
 /* - DEBUGGING - */
 
-void acaEstoy(void * a) {
+void acaEstoy(int a) {
 	ncPrint("aca estoy");ncNewline();
-	//ncPrintHex(a);
+	ncPrintDec(a);
 	while(1);
 }
 
