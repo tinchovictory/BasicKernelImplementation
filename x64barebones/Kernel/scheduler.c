@@ -3,7 +3,7 @@
 #include <scheduler.h>
 #include <process.h>
 
-#include <memory.h> //TESING THEN REPLACE WITH MEMORY ALLOCATOR
+#include <memoryManager.h> //TESING THEN REPLACE WITH MEMORY ALLOCATOR
 #include <naiveConsole.h>
 
 #define NULL 0
@@ -19,8 +19,13 @@ static int queueSize = 0;
 static int numberOfTicks = 0;
 
 void * switchUserToKernel(void * esp) {
-	processPointer process = currentProcess->process; // Pointer to process that I am about to deallocate.
-	process->userStack = esp; // Save stack pointer.
+	//processPointer process = currentProcess->process; // Pointer to process that I am about to deallocate.
+	//process->userStack = esp; // Save stack pointer.
+	currentProcess->process->userStack = esp; // sin esto no anda
+//	ncPrint("Switch user to kernel -> userStack: ");ncPrintHex(esp);ncNewline();
+	//ncPrint("process->userStack: ");ncPrintHex(process->userStack);ncNewline();
+	//ncPrint("currentProcess->process->userStack: ");ncPrintHex(currentProcess->process->userStack);ncNewline();
+//	ncPrint("Switch user to kernel -> kernelStack: ");ncPrintHex(kernelStack);ncNewline();
 	return kernelStack;
 }
 
@@ -29,20 +34,21 @@ void runScheduler() {
 		return;
 	}
 
+//	ncPrint("Im in process: ");ncPrintDec(currentProcess->process->pid);ncNewline();
+	//ncPrint("process->userStack: ");ncPrintHex(currentProcess->process->userStack);ncNewline();
+
 	//Check quantum
 	if(numberOfTicks < QUANTUM) {
 		numberOfTicks++;
 		return;
 	}
 	numberOfTicks = 0;
-	ncNewline();
-	ncPrint("Switch");
-	ncNewline();
 	currentProcess = currentProcess->next;
 }
 
 void * switchKernelToUser () {
 	processPointer process = currentProcess->process;
+//	ncPrint("Switch kernel to User -> userStack: ");ncPrintHex(process->userStack);ncNewline();
 	return process->userStack;
 }
 
@@ -53,7 +59,7 @@ int addProcess(void * entryPoint) {
 }
 
 void addProcessToQueue(processPointer p) {
-	schedulerNode * node = (schedulerNode *) malloc(1000);
+	schedulerNode * node = (schedulerNode *) allocate(0x1000);
 
 	node->process = p;
 
@@ -74,5 +80,5 @@ void * currentProcessEntryPoint() {
 }
 
 void setKernelStack() {
-	kernelStack = (void *) malloc(1000);
+	kernelStack = (void *) allocate(0x1000);
 }

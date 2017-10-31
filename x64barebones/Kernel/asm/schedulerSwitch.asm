@@ -6,6 +6,8 @@ EXTERN runScheduler
 EXTERN switchKernelToUser
 EXTERN currentProcessEntryPoint
 
+EXTERN acaEstoy
+
 section .text
 
 ; Ref https://gitlab.com/RowDaBoat/Wyrm/blob/master/Kernel/CPU/irqHandlers.asm
@@ -52,39 +54,50 @@ section .text
 
 ;tickHandler
 processSwitch:
-
+	; Save current context.
 	pushaq
 
-	mov rdi, rsp ; salvo puntero a stack
+	; Call switchUserToKernel fn in C with rsp as parameter.
+	mov rdi, rsp 
+	call switchUserToKernel
 
-	call switchUserToKernel ; se pasa a modo kernel. Ver scheduler.c
+	; fn returns kernel stack. Start using kernel stack.
+	mov rsp, rax
 
-	mov rsp, rax ; retorno de switchUserToKernel es el puntero al stack del kernel
-
-	; En la realidad tendria que pushear y luego popear el contexto del stack pero no lo hago porque no hago nada con el kernel en el tp durante el process switch.
-
+	; Now i'm in kernel space
+	; Run scheculer for process switch
 	call runScheduler
 
-	call switchKernelToUser ; se pasa a modo user. Ver scheduler.c
+	; Change to user space. Kernel stack will remain as it was since no register was pushed.
+	call switchKernelToUser
 
+	; fn returns user stack. Start using user stack
 	mov rsp, rax ; retorno de switchKernelToUser es el puntero al stack del siguiente proceso a ejecutar
 
+	; Restore context
 	popaq
 
+	; End interruption
 	mov al, 20h ; EOI
 	out 20h, al
 
 	iretq
 
 
+; Load first process
 endLoadingKernel:
-	call switchKernelToUser
 
+	; Load first process user stack.
+	call switchKernelToUser
 	mov rsp, rax
 
+	; Get first process entry point.
 	call currentProcessEntryPoint
 
+	; Allow interruptions.
 	sti
+
+	; Start running first process entry point.
 	jmp rax
 
 	ret

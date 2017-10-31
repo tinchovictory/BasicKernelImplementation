@@ -58,7 +58,9 @@ void iSetHandler(int index, uint64_t handler) {
 }
 
 void initializeInterruptions(){
+	/* Set timerTick handler as process switch */
 	iSetHandler(0x20, (uint64_t) processSwitch);//asm irq0Handler
+	
 	iSetHandler(0x21, (uint64_t) irq1Handler);
 	iSetHandler(0x2B, (uint64_t) irq11Handler);
 

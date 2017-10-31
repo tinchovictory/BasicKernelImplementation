@@ -12,6 +12,7 @@
 
 #include <systemCalls.h>
 #include <scheduler.h>
+#include <memoryManager.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -88,16 +89,19 @@ void * initializeKernelBinary()
 	return getStackBase();
 }
 
-void cli();
-void endLoadingKernel();
+/* Assembly functions */
+void cli(); /* Stop interruptions */
+void endLoadingKernel(); /*  */
 
+/* Initialize kernel loading */
 void startLoadingKernel() {
 	cli();
-	setKernelStack();
+	/* Initialize kernel stack memory position */
+	//setKernelStack();
 }
 
 
-
+/* Debugging processes */
 void secondProcess() {
 	while(1) {
 		int j=0;
@@ -108,7 +112,7 @@ void secondProcess() {
 	}
 }
 
-void init(){
+void init(){ //change to real init process
 	while(1){
 		int j=0;
 		while(j<100000000){
@@ -116,34 +120,45 @@ void init(){
 		}
 		ncPrint("Process 0");
 		
-		//addProcess(secondProcess);
 	}
 }
 
 int main()
 {	
-	//startStartup -> cli()
+
 	startLoadingKernel();
 
 	initializeInterruptions();
 	activeRTLdma();
 	initRTL();
+
+	/* Start memory allocator */
+	memAllocatorInit ((void *) 0x1000000, (void *)0x8000000);
+	//memAllocatorInit (0x300000, 0x400000);
 	
+	setKernelStack();
+
 	ncClear();
 
-	
+	/**DEBUGGING**/
+	/*ncPrintHex(allocate(0x1000));ncNewline();
+	ncPrintHex(allocate(0x1000));ncNewline();
+	ncPrintHex(allocate(0x1000));ncNewline();
+	while(1);
+	/**DEBUGGING**/
 
 	//((EntryPoint)sampleCodeModuleAddress)();
 
-
-	//set init process
+	/* Add init process */
 	addProcess(init);
-	addProcess(secondProcess);
+
+	addProcess(secondProcess); //Debugging
+
+	//Init should add shell process
 	//addProcess(sampleCodeModuleAddress);
 	
 
-
-	//endStartup -> switchKernel to user, sti()
+	/* Switch to first processs, and allow interruptions */
 	endLoadingKernel();
 
 	while(1);
@@ -154,10 +169,10 @@ int main()
 
 /* - DEBUGGING - */
 
-
-
-void acaEstoy() {
+void acaEstoy(void * a) {
 	ncPrint("aca estoy");ncNewline();
+	//ncPrintHex(a);
+	while(1);
 }
 
 void printEthMsg(ethMsg msg1){

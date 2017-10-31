@@ -1,10 +1,13 @@
 #include <process.h>
 #include <stdint.h>
-#include <memory.h>
+#include <memoryManager.h>
 
+#include <naiveConsole.h>
+
+/* Number of process created */
 static int currentPid = 0;
 
-// RowDaBoat
+/* Stack frame structure taken from RowDaBoat */
 typedef struct StackFrame {
 	//Registers restore context
 	uint64_t gs;
@@ -36,10 +39,10 @@ typedef struct StackFrame {
 
 
 processPointer createProcess(void * entryPoint) {
-
-	processPointer process = (processPointer) malloc(1000);
+	/* Create process in memory, asign a base pointer, initialize stack frame */
+	processPointer process = (processPointer) allocate(0x1000);
 	process->entryPoint = entryPoint;
-	process->baseStack = (void *) malloc(100000);
+	process->baseStack = (void *) allocate(0x100000);
 	process->userStack = fillStackFrame(entryPoint, process->baseStack);
 	process->pid = currentPid;
 
@@ -48,6 +51,7 @@ processPointer createProcess(void * entryPoint) {
 	return process;
 }
 
+/* fillStackFrame taken form RowDaBoat */
 void * fillStackFrame(void * entryPoint, void * baseStack) {
 	StackFrame * frame = (StackFrame*)baseStack - 1;
 	frame->gs =		0x001;
