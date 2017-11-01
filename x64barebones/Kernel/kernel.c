@@ -112,6 +112,17 @@ void thread() {
 		ncPrint("thread");
 	}
 }
+
+void thread2() {
+	while(1) {
+		int j=0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("thread2");
+	}
+}
+
 void secondProcess() {
 	while(1) {
 		int j=0;
@@ -157,9 +168,10 @@ int main()
 
 	/* Add init process */
 	addProcess(init);
-	addThreadToProcess(0, thread);
 
 	addProcess(secondProcess); //Debugging
+	addThreadToProcess(1, thread);
+	addThreadToProcess(1, thread2);
 
 	//Init should add shell process
 	//addProcess(sampleCodeModuleAddress);
@@ -176,9 +188,9 @@ int main()
 
 /* - DEBUGGING - */
 
-void acaEstoy(int a) {
+void acaEstoy() {
 	ncPrint("aca estoy");ncNewline();
-	ncPrintDec(a);
+	//ncPrintDec(a);
 	while(1);
 }
 

@@ -1,25 +1,18 @@
 #ifndef __PROCESS
 	#define __PROCESS
 
-	#define THREAD_QUANTUM 20
+	#include <threads.h>
+
+	#define NULL (void *)0
+
+	#define NUMBER_OF_PAGES 256
 
 	/*
 		Registers are pushed into the stack instead of being stored in the pcb
 		in processSwitch function inside schedulerSwitch.asm
 	*/
 
-	typedef struct thread {
-		void * userStack;
-		void * entryPoint;
-		void * baseStack;
-		int pthread;
-	} threadNode;
-
-	typedef struct libNode {
-		struct thread * thread;
-		struct libNode * next;
-	} threadLibrary;
-
+	
 	typedef struct process {
 		void * userStack; // Stack pointer
 		void * entryPoint;

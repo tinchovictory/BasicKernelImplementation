@@ -1,48 +1,18 @@
 #include <process.h>
 #include <stdint.h>
 #include <memoryManager.h>
+#include <stackFrame.h>
 
 #include <naiveConsole.h>
 
 /* Number of process created */
 static int currentPid = 0;
 
-/* Stack frame structure taken from RowDaBoat */
-typedef struct StackFrame {
-	//Registers restore context
-	uint64_t gs;
-	uint64_t fs;
-	uint64_t r15;
-	uint64_t r14;
-	uint64_t r13;
-	uint64_t r12;
-	uint64_t r11;
-	uint64_t r10;
-	uint64_t r9;
-	uint64_t r8;
-	uint64_t rsi;
-	uint64_t rdi;
-	uint64_t rbp;
-	uint64_t rdx;
-	uint64_t rcx;
-	uint64_t rbx;
-	uint64_t rax;
-
-	//iretq hook
-	uint64_t rip;
-	uint64_t cs;
-	uint64_t eflags;
-	uint64_t rsp;
-	uint64_t ss;
-	uint64_t base;
-} StackFrame;
-
-
 processPointer createProcess(void * entryPoint) {
 	/* Create process in memory, asign a base pointer, initialize stack frame */
-	processPointer process = (processPointer) allocate(0x1000);
+	processPointer process = (processPointer) allocate(PAGE_SIZE);
 	process->entryPoint = entryPoint;
-	process->baseStack = (void *) allocate(0x100000);
+	process->baseStack = (void *) allocate(PAGE_SIZE * NUMBER_OF_PAGES);
 	process->userStack = fillStackFrame(entryPoint, process->baseStack);
 	process->pid = currentPid;
 

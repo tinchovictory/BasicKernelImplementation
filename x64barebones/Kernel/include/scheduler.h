@@ -5,6 +5,13 @@
 
 	#define QUANTUM 100
 
+	#define NULL (void *)0
+
+	#define NO_SWITCH 0
+	#define PROCESS_SWITCH 1
+	#define THREAD_SWITCH 2
+
+
 	typedef struct node {
 		struct process * process;
 		struct node * next;
@@ -42,5 +49,9 @@
 
 
 	int threadCheck();
+
+	void * nextThread(void * rsp);
+
+	processNode * getProcessWithPid(int pid);
 
 #endif
