@@ -109,7 +109,7 @@ void thread() {
 		while(j<100000000){
 			j++;
 		}
-		ncPrint("thread");
+		ncPrint("thread1");
 	}
 }
 

@@ -5,7 +5,7 @@
 
 	#define QUANTUM 100
 
-	#define NULL (void *)0
+	#define NULL ((void *)0)
 
 	#define NO_SWITCH 0
 	#define PROCESS_SWITCH 1

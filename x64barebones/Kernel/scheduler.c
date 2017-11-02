@@ -27,13 +27,7 @@ int quantumCheck() {
 }
 
 void * switchUserToKernel(void * esp) {
-	if(currentProcess->process->threadLibrary == NULL) {
-		currentProcess->process->userStack = esp;	
-	} else {
-		//Thread case
-		currentProcess->process->currentThread->thread->userStack = esp;
-	}
-
+	currentProcess->process->currentThread->thread->userStack = esp;
 	return kernelStack;
 }
 
@@ -47,18 +41,14 @@ void runScheduler() {
 
 void * switchKernelToUser () {
 	processPointer process = currentProcess->process;
-
-	if(process->threadLibrary == NULL) {
-		return process->userStack;	
-	}
-
 	return process->currentThread->thread->userStack;
 	
 }
 
 int addProcess(void * entryPoint) {
-	processPointer process = createProcess(entryPoint);
+	processPointer process = createProcess();
 	addProcessToQueue(process);
+	addThreadToProcess(process->pid, entryPoint);
 	return process->pid;
 }
 
@@ -81,7 +71,7 @@ void addProcessToQueue(processPointer p) {
 }
 
 void * currentProcessEntryPoint() {
-	return currentProcess->process->entryPoint;
+	return currentProcess->process->currentThread->thread->entryPoint;
 }
 
 void setKernelStack() {

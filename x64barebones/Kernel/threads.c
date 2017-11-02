@@ -7,18 +7,17 @@
 
 
 int addThreadToProcess(int pid, void * entryPoint) {
-	threadNode * thread = createThread(entryPoint);
-
-	threadLibrary * node = (threadLibrary *) allocate(PAGE_SIZE);
-
-	node->thread = thread;
-
 	processNode * process = getProcessWithPid(pid);
 
 	if(process == NULL) {
 		return -1;
 	}
 
+	threadNode * thread = createThread(entryPoint, process->currentPThread);
+
+	threadLibrary * node = (threadLibrary *) allocate(PAGE_SIZE);
+
+	node->thread = thread;
 
 	if(process->currentThread == NULL) {
 		process->threadLibrary = node;
@@ -29,23 +28,55 @@ int addThreadToProcess(int pid, void * entryPoint) {
 		process->threadLibrary->next = node;
 	}
 
-	//queueSize++;
+	process->currentPThread++;
+	process->threadSize++;
 
 	return thread->pthread;
 }
 
-static int currentPthread = 0; // TIENE QUE ESTAR EN PROCESS
+//static int currentPthread = 0; // TIENE QUE ESTAR EN PROCESS
 
 
-threadNode * createThread(void * entryPoint) {
+threadNode * createThread(void * entryPoint, int currentPThread) {
 	/* Create process in memory, asign a base pointer, initialize stack frame */
 	threadNode * thread = (threadNode *) allocate(PAGE_SIZE);
 	thread->entryPoint = entryPoint;
 	thread->baseStack = (void *) allocate(PAGE_SIZE * NUMBER_OF_PAGES);
 	thread->userStack = fillStackFrame(entryPoint, thread->baseStack);
-	thread->pthread = currentPthread;
+	thread->pthread = currentPThread;
 
-	currentPthread++;
+	//currentPthread++;
 
 	return thread;
+}
+
+/* fillStackFrame taken form RowDaBoat */
+void * fillStackFrame(void * entryPoint, void * baseStack) {
+	StackFrame * frame = (StackFrame*)baseStack - 1;
+	frame->gs =		0x001;
+	frame->fs =		0x002;
+	frame->r15 =	0x003;
+	frame->r14 =	0x004;
+	frame->r13 =	0x005;
+	frame->r12 =	0x006;
+	frame->r11 =	0x007;
+	frame->r10 =	0x008;
+	frame->r9 =		0x009;
+	frame->r8 =		0x00A;
+	frame->rsi =	0x00B;
+	frame->rdi =	0x00C;
+	frame->rbp =	0x00D;
+	frame->rdx =	0x00E;
+	frame->rcx =	0x00F;
+	frame->rbx =	0x010;
+	frame->rax =	0x011;
+	frame->rip =	(uint64_t)entryPoint;
+	frame->cs =		0x008;
+	frame->eflags = 0x202;
+	frame->rsp =	(uint64_t)&(frame->base);
+	frame->ss = 	0x000;
+	frame->base =	0x000;
+
+	return (void *) frame;
+	
 }

@@ -3,7 +3,7 @@
 
 	#define THREAD_QUANTUM 20
 
-	#define NULL (void *)0
+	#define NULL ((void *)0)
 
 	#define NUMBER_OF_PAGES 256
 
@@ -19,17 +19,10 @@
 		struct libNode * next;
 	} threadLibrary;
 
-
-	//int threadCheck();
-
-	//void * nextThread(void * rsp);
-
-	threadNode * createThread(void * entryPoint);
+	threadNode * createThread(void * entryPoint, int currentPThread);
 
 	void * fillStackFrame(void * entryPoint, void * baseStack);
 
 	int addThreadToProcess(int pid, void * entryPoint);
-
-	//threadNode * createThread(void * entryPoint);
 
 #endif
