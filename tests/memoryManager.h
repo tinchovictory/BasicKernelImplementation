@@ -16,10 +16,6 @@ int enoughSpace (int remainingMem);
 
 void mapInit ();
 
-// Getter
-
-int * getMap ();
-
 // Allocation Functions
 
 void * allocate (uint64_t request);

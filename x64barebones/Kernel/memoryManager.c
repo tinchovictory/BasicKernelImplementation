@@ -57,25 +57,15 @@ int enoughSpace (int remainingMem) {
 }
 
 void mapInit () {
-	int size = MAP_SIZE(blocksAmount); // ints required to represent the state of each block.
+	int i, size = MAP_SIZE(blocksAmount); // ints required to represent the state of each block.
 
 	usedMap = (int *) (initMem + blocksAmount*PAGE_SIZE);
 
-	int i;
-
 	for(i = 0 ; i < size; i++) { // Reset map.
-        *(usedMap + i) = 0;
+        usedMap[i] = 0;
 	}
 
 	return;
-}
-
-/***********************************************************
- * End of Memory Allocator Initializer					   *
- ***********************************************************/
-
-int * getMap () {
-	return usedMap;
 }
 
 /***********************************************************
@@ -83,7 +73,7 @@ int * getMap () {
  ***********************************************************/
 
 void * allocate (uint64_t request) {
-	int blocksRequest = CEIL(request,PAGE_SIZE);
+	int blocksRequest = DIV_CEIL(request,PAGE_SIZE);
 	int i, j, allocFound = 0;
 	// After lastIndex, it is mathematically impossible to find a candidate.
 	int lastIndex = blocksAmount - blocksRequest;
@@ -107,9 +97,7 @@ void * allocate (uint64_t request) {
 
 	reserve(blocksRequest,i);
 
-	void * startingMem = initMem + i*PAGE_SIZE;
-
-	return startingMem;
+	return initMem + i*PAGE_SIZE;
 }
 
 void reserve (int blocksRequest, int startingBlock) {
@@ -118,6 +106,7 @@ void reserve (int blocksRequest, int startingBlock) {
 	for (i = startingBlock ; i < limit ; i++) {
 		setBit (usedMap,i);
 	}
+	
 	return;
 }
 
@@ -126,7 +115,7 @@ void reserve (int blocksRequest, int startingBlock) {
  ***********************************************************/
 
 int deallocate (void * startingPosition, uint64_t size) {
-	int blocks = CEIL(size,PAGE_SIZE);
+	int blocks = DIV_CEIL(size,PAGE_SIZE);
 	int startingBlock = (startingPosition - initMem) / PAGE_SIZE;
 	int i, limit = startingBlock + blocks;
 
@@ -137,5 +126,6 @@ int deallocate (void * startingPosition, uint64_t size) {
 	for (i = startingBlock ; i < limit ; i++) {
 		resetBit (usedMap,i);
 	}
+
 	return 1;
 }

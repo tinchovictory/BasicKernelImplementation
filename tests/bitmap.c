@@ -3,7 +3,7 @@
 void setBit (int * bitMap, int position) {
 	int * sector = SECTOR_ADDR(bitMap,position);
 
-	*sector = *sector | SET_MASK(position);
+	*sector |= SET_MASK(position);
 
 	return;
 }
@@ -11,7 +11,7 @@ void setBit (int * bitMap, int position) {
 void resetBit (int * bitMap, int position) {
 	int * sector = SECTOR_ADDR(bitMap,position);
 
-	*sector = *sector & RESET_MASK(position);
+	*sector &= RESET_MASK(position);
 
 	return;
 }

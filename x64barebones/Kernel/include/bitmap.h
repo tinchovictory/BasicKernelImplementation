@@ -10,23 +10,23 @@
 
 #define INT_BITS ( sizeof(int) * BYTE_SIZE )
 
-#define MAP_SIZE(bits) CEIL(bits,INT_BITS)
+#define MAP_SIZE(bits) DIV_CEIL(bits,INT_BITS)
 
-#define INT_POSITION(position) ( (position) % INT_BITS )
+#define IS_AVAILABLE(bitMap,position) ( IS_AVAILABLE_INNER( SECTOR(bitMap,position) , SECTOR_POSITION(position) ) )
+
+#define IS_AVAILABLE_INNER(sector,position) ( GET_BIT(sector,position) == 0 )
 
 // The bitwise operator "">>"" moves the bit that I care about to the right. Then, I use a mask
 // to put everything else to 0.
-#define GET_BIT(intSector,intPosition) ( (intSector) >> (intPosition) & 1 )
+#define GET_BIT(sector,position) ( ( (sector) >> (position) ) & 1 )
 
-#define SECTOR(bitMap,position) ( *( (bitMap) + ( (position) / INT_BITS ) ) )
+#define SECTOR(bitMap,position) (bitMap)[(position) / INT_BITS]
+
+#define SECTOR_POSITION(position) ( (position) % INT_BITS )
 
 #define SECTOR_ADDR(bitMap,position) &SECTOR(bitMap,position)
 
-#define IS_AVAILABLE_INNER(intSector,intPosition) ( GET_BIT(intSector,intPosition) == 0 )
-
-#define IS_AVAILABLE(bitMap,position) ( IS_AVAILABLE_INNER( SECTOR(bitMap,position) , INT_POSITION(position) ) )
-
-#define SET_MASK(position) ( 1 << INT_POSITION(position) )
+#define SET_MASK(position) ( 1 << SECTOR_POSITION(position) )
 
 #define RESET_MASK(position) ~SET_MASK(position)
 

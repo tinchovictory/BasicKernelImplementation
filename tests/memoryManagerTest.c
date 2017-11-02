@@ -5,14 +5,21 @@
 
 #include "memoryManager.h"
 
+#define AVAILABLE 1
+#define UNAVAILABLE 0
+
 void ceilTest();
+void ceilTest1();
+void ceilTest2();
 
 void bitMapTest();
+void mapAvailabilityTest(int expectedState, int bits, int * map);
 
 void managerTest();
+void managerUseTest();
+void allocTest(uint64_t request, void * expectedDir);
 
 int testMemAllocatorInit(void * initPosition, void * endPosition);
-
 void testMapInit();
 
 extern void * initMem;
@@ -31,84 +38,119 @@ int main (int argc, char *argv[]) {
 }
 
 void ceilTest() {
-	int a = 3;
-	int b = 2;
+	
+	ceilTest1();
+	
+	ceilTest2();
 
-	assert(CEIL(a,b) == 2);
+	return;
+}
 
-	a = 2;
+void ceilTest1() {
 
-	assert(CEIL(a,b) == 1);
+	int num = 3;
+	int den = 2;
 
-	a = -3;
+	assert(DIV_CEIL(num,den) == 2);
 
-	assert(CEIL(a,b) == -1);
+	num = -3;
+	den = -2;
+
+	assert(DIV_CEIL(num,den) == 2);
+
+	num = 2;
+	den = 2;
+
+	assert(DIV_CEIL(num,den) == 1);
+
+	num = -3;
+
+	assert(DIV_CEIL(num,den) == -1);
+
+	num = -3;
+	den = -2;
+
+	assert(DIV_CEIL(num,den) == 2);
+
+	num = 3;
+
+	assert(DIV_CEIL(num,den) == -1);
+
+	return;
+}
+
+void ceilTest2() {
 
 	uint64_t a2 = 30000;
 	uint64_t b2 = 20000;
 
-	assert(CEIL(a2,b2) == 2);
+	assert(DIV_CEIL(a2,b2) == 2);
 
 	a2 = 20000;
 
-	assert(CEIL(a2,b2) == 1);
+	assert(DIV_CEIL(a2,b2) == 1);
+
+	a2 = 10000;
+
+	assert(DIV_CEIL(a2,b2) == 1);
+
+	b2 = 3333;
+
+	assert(DIV_CEIL(a2,b2) == 4);
 
 	return;
 }
 
 void bitMapTest() {
 
-	uint64_t pageSize = 0x1000;
-
 	int bits = 1138;
-
+	int position;
+	int testPosition = 4;
 	int mapSize = MAP_SIZE(bits);
+	int * map = (int *) calloc(mapSize,sizeof(int));
 
 	assert(  bits < mapSize*sizeof(int)*BYTE_SIZE ); // I check if the map got the right size.
 	assert(  bits > (mapSize-1)*sizeof(int)*BYTE_SIZE );
 
-	int * map = (int *) calloc(mapSize,sizeof(int));
-
-	int position;
+	mapAvailabilityTest(AVAILABLE,bits,map);
 
 	for (position = 0; position < bits; position++) {
-		// Initial Test to the IS_AVAILABLE macro. Map should be empty (fully available).
-		assert( IS_AVAILABLE(map,position) == 1 );
+		setBit(map,position); // I occupy each position of the map.
 	}
+
+	mapAvailabilityTest(UNAVAILABLE,bits,map);
 
 	for (position = 0; position < bits; position++) {
-		setBit(map,position);
+		resetBit(map,position); // I make each position of the map available.
 	}
 
-	for (position = 0; position < bits; position++) {
-		assert( IS_AVAILABLE(map,position) == 0 );
-	}
-
-	for (position = 0; position < bits; position++) {
-		resetBit(map,position);
-	}
-
-	for (position = 0; position < bits; position++) {
-		assert( IS_AVAILABLE(map,position) == 1 );
-	}
-
-	int testPosition = 4;
+	mapAvailabilityTest(AVAILABLE,bits,map);
 
 	setBit(map,testPosition);
 
 	for (position = 0; position < bits; position++) {
 		if (position == testPosition) {
-			assert( IS_AVAILABLE(map,position) == 0 );
+			assert( IS_AVAILABLE(map,position) == UNAVAILABLE );
 		} else {
-			assert( IS_AVAILABLE(map,position) == 1 );
+			assert( IS_AVAILABLE(map,position) == AVAILABLE );
 		}
 	}
 
 	resetBit(map,testPosition);
 
+	mapAvailabilityTest(AVAILABLE,bits,map);
+
+	return;
+}
+
+void mapAvailabilityTest(int expectedState, int bits, int * map) {
+	int position;
+
 	for (position = 0; position < bits; position++) {
-		assert( IS_AVAILABLE(map,position) == 1 );
+		assert( IS_AVAILABLE(map,position) == expectedState );
 	}
+
+	return;
 }
 
 void managerTest() {
@@ -121,61 +163,49 @@ void managerTest() {
 	// I require extra space to save the map and its pointer.
 	assert(blocksAmount == (testPageAmount -1));
 
-	int mapSize = MAP_SIZE(testPageAmount);
-
-	endPosition = initPosition + testPageAmount*PAGE_SIZE + sizeof(uint64_t) + mapSize;
+	endPosition = initPosition + testPageAmount*PAGE_SIZE + sizeof(uint64_t) + MAP_SIZE(testPageAmount);
 
 	testMemAllocatorInit(initPosition,endPosition);
 
 	assert(blocksAmount == testPageAmount);
 
+	managerUseTest();
+
+	return;
+}
+
+void managerUseTest() {
 	uint64_t request = 2*PAGE_SIZE;
 	void * savePosition = allocate(request);
 
-	assert(savePosition == initPosition);
+	assert(savePosition == initMem);
 
-	assert( IS_AVAILABLE(usedMap,1) == 0 ); // Last reserved page.
-	assert( IS_AVAILABLE(usedMap,2) == 1 );
+	assert( IS_AVAILABLE(usedMap,1) == UNAVAILABLE ); // Last reserved page.
+	assert( IS_AVAILABLE(usedMap,2) == AVAILABLE );
 
-	request = 4*PAGE_SIZE;
-	savePosition = allocate(request);
+	allocTest(4*PAGE_SIZE,NULL); // I need 4 blocks but I have 3 available.
+	allocTest(3*PAGE_SIZE,initMem + 2*PAGE_SIZE);
 
-	// I need 4 blocks but I have 3 available.
-	assert(savePosition == NULL);
+	mapAvailabilityTest(UNAVAILABLE,blocksAmount,usedMap);
 
-	request = 3*PAGE_SIZE;
-	savePosition = allocate(request);
+	assert(deallocate (initMem,6*PAGE_SIZE) == 0); // Not enough pages.
 
-	assert(savePosition == (initPosition + 2*PAGE_SIZE));
+	assert(deallocate (initMem,5*PAGE_SIZE) == 1); // Map should be all free now.
 
-	int i;
+	mapAvailabilityTest(AVAILABLE,blocksAmount,usedMap);
 
-	for (i = 0 ; i < blocksAmount ; i++) { // All pages used.
-		assert( IS_AVAILABLE(usedMap,i) == 0 );
-	}
+	allocTest(3*PAGE_SIZE,initMem);
+	allocTest(PAGE_SIZE,initMem + 3*PAGE_SIZE);
 
-	int deallocResult = deallocate (initPosition,6*PAGE_SIZE);
+	return;
+}
 
-	assert(deallocResult == 0); // Not enough pages.
+void allocTest(uint64_t request, void * expectedDir) {
+	void * savePosition = allocate(request);
 
-	deallocResult = deallocate (initPosition,5*PAGE_SIZE);
+	assert(savePosition == expectedDir);
 
-	assert(deallocResult == 1);
-
-	for (i = 0 ; i < blocksAmount ; i++) {
-		assert( IS_AVAILABLE(usedMap,i) == 1 );
-	}
-
-	request = 3*PAGE_SIZE;
-	savePosition = allocate(request);
-
-	// I need 4 blocks but I have 3 available.
-	assert(savePosition == initPosition);
-
-	request = PAGE_SIZE;
-	savePosition = allocate(request);
-
-	assert(savePosition == (initPosition + 3*PAGE_SIZE));
+	return;
 }
 
 // mapInit from memAllocatorInit replaced to use calloc.
@@ -203,7 +233,7 @@ void testMapInit () {
 	int i;
 
 	for(i = 0 ; i < size; i++) { // Reset map.
-        *(usedMap + i) = 0;
+        usedMap[i] = 0;
 	}
 
 	return;
