@@ -3,6 +3,7 @@
 #include <scheduler.h>
 #include <process.h>
 #include <threads.h>
+#include <videoDriver.h>
 
 #include <memoryManager.h> //TESING THEN REPLACE WITH MEMORY ALLOCATOR
 #include <naiveConsole.h>
@@ -54,7 +55,6 @@ void runScheduler() {
 void * switchKernelToUser () {
 	processPointer process = currentProcess->process;
 	return process->currentThread->thread->userStack;
-	
 }
 
 int addProcess(void * entryPoint) {
@@ -88,6 +88,7 @@ void removeProcess(int pid) {
 	}
 	processNode * process = getProcessWithPid(pid);
 	process->state = DEAD;
+	queueSize--;
 }
 
 void * currentProcessEntryPoint() {
@@ -135,6 +136,37 @@ void removeDeadProcess() {
 	}
 }
 
+void blockProcess(int pid) {
+	processNode * process = getProcessWithPid(pid);
+	process->state = BLOCKED;
+}
+
+void unblockProcess(int pid) {
+	processNode * process = getProcessWithPid(pid);
+	process->state = READY;	
+}
+
+/***************************/
+/*********CAMBIAR***********/
+/***************************/
+void printAllProcess() {
+	int numberOfProcess;
+	schedulerNode * current = processQueue;
+
+	newLine();
+	print("PID");printTab();print("Name");printTab();print("State");printTab();print("Memory");printTab();print("Threads");
+	newLine();
+
+	for(numberOfProcess = 0; numberOfProcess < queueSize; numberOfProcess++) {
+		/* Reemplazar por valores. El problema es que el driver no soporta numeros, y los tabs lo van a imprimir desparejo */
+		print("PID");printTab();print("Name");printTab();print("State");printTab();print("Memory");printTab();print("Threads");
+		newLine();
+		current = current->next;
+	}
+}
+/***************************/
+
+
 /* Threads */
 
 void threadCheck() {
@@ -174,6 +206,7 @@ void removeThread(int pid, int pthread) {
 	/* Remove thread */
 	threadNode * thread = getThreadWithPthread(pthread, process);
 	thread->state = DEAD;
+	process->threadSize--;
 }
 
 

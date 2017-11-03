@@ -59,6 +59,12 @@
 
 	void removeDeadThreads(processNode * process);
 
+	void blockProcess(int pid);
+
+	void unblockProcess(int pid);
+
+	void printAllProcess();
+
 
 	/* - Debuging - */
 	void printProcessStatus();

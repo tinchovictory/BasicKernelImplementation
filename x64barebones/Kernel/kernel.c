@@ -134,23 +134,22 @@ void secondProcess() {
 		//addThreadToProcess(0, thread);
 		i++;
 		if(i==4) {
-			ncPrint("--MATO--");
-			removeThread(1,1);
+			blockProcess(0);
+			ncPrint("--BLOCKED--");
+			//printAllProcess();
 		}
-		//printProcessStatus();
+		if(i==10) {
+			unblockProcess(0);
+			ncPrint("--UNBLOCKED--");
+		}
 	}
 }
 
-void printProcess() {
-	/*int j=0;
-		while(j<100000000){
-			j++;
-		}
-	//printProcessStatus();*/
-}
 
 void p() {
 	ncPrint("hola ");
+	removeProcess(2);
+	while(1);
 }
 
 void init(){ //change to real init process
@@ -189,13 +188,11 @@ int main()
 	addProcess(init);
 
 	addProcess(secondProcess); //Debugging
-	addThreadToProcess(1, thread);
-	addThreadToProcess(1, thread2);
+	addThreadToProcess(1, thread);//Debugging
+	addThreadToProcess(1, thread2);//Debugging
 
-	//addProcess(printProcess);
-	//addProcess(p);
-	//addThreadToProcess(1, printProcess);
-
+	addProcess(p);//Debugging
+	
 	//Init should add shell process
 	//addProcess(sampleCodeModuleAddress);
 	
