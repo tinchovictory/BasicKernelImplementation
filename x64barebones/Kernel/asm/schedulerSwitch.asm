@@ -58,20 +58,6 @@ section .text
 ;tickHandler
 processSwitch:
 
-	push rbp
-	mov rbp, rsp
-
-	call quantumCheck
-
-	cmp eax, 0
-	je END
-
-	cmp eax, 2
-	je THREAD
-
-	mov rsp, rbp
-	pop rbp
-
 	; Save current context.
 	pushaq
 
@@ -101,40 +87,6 @@ processSwitch:
 
 	iretq
 
-END:
-	mov rsp, rbp
-	pop rbp
-
-	; End interruption
-	mov al, 20h ; EOI
-	out 20h, al
-
-	iretq
-
-THREAD:
-	mov rsp, rbp
-	pop rbp
-
-	; Save current context.
-	pushaq
-
-	; Call nextThread fn in C with rsp as parameter.
-	mov rdi, rsp 
-	call nextThread
-
-	; fn returns next thread stack.
-	mov rsp, rax
-
-	; Restore context
-	popaq
-
-	; End interruption
-	mov al, 20h ; EOI
-	out 20h, al
-
-	iretq
-
-
 
 ; Load first process
 endLoadingKernel:
@@ -154,6 +106,3 @@ endLoadingKernel:
 
 	ret
 
-; 
-threadSwitch:
-	

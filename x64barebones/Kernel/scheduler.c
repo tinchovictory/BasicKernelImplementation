@@ -17,15 +17,6 @@ static int queueSize = 0;
 
 static int numberOfTicks = 0;
 
-int quantumCheck() {
-	if(numberOfTicks < QUANTUM) {
-		numberOfTicks++;
-		return threadCheck();
-	}
-	numberOfTicks = 0;
-	return PROCESS_SWITCH;
-}
-
 void * switchUserToKernel(void * esp) {
 	currentProcess->process->currentThread->thread->userStack = esp;
 	return kernelStack;
@@ -36,6 +27,16 @@ void runScheduler() {
 		return;
 	}
 
+	/* Check quantum */
+	if(numberOfTicks < QUANTUM) {
+		numberOfTicks++;
+		/* Check thread quantum */
+		threadCheck();
+		return;
+	}
+
+	/* Run next process */
+	numberOfTicks = 0;
 	currentProcess = currentProcess->next;
 }
 
@@ -95,22 +96,16 @@ processNode * getProcessWithPid(int pid) {
 
 /* Threads */
 
-int threadCheck() {
-	if(currentProcess->process->threadLibrary == NULL) {
-		return NO_SWITCH;
-	}
+void threadCheck() {
 
 	if( (currentProcess->threadTick) < THREAD_QUANTUM) {
 		currentProcess->threadTick++;
-		return NO_SWITCH;
+		return;
 	}
 	currentProcess->threadTick = 0;
-	
-	return THREAD_SWITCH;
+	nextThread();
 }
 
-void * nextThread(void * rsp) {
-	currentProcess->process->currentThread->thread->userStack = rsp;
+void nextThread() {
 	currentProcess->process->currentThread = currentProcess->process->currentThread->next;
-	return currentProcess->process->currentThread->thread->userStack;
 }

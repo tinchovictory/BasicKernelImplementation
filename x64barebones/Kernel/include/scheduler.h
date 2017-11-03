@@ -7,11 +7,6 @@
 
 	#define NULL ((void *)0)
 
-	#define NO_SWITCH 0
-	#define PROCESS_SWITCH 1
-	#define THREAD_SWITCH 2
-
-
 	typedef struct node {
 		struct process * process;
 		struct node * next;
@@ -48,9 +43,9 @@
 	void setKernelStack();
 
 
-	int threadCheck();
+	void threadCheck();
 
-	void * nextThread(void * rsp);
+	void nextThread();
 
 	processNode * getProcessWithPid(int pid);
 
