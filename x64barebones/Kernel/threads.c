@@ -44,6 +44,7 @@ threadNode * createThread(void * entryPoint, int currentPThread) {
 	thread->baseStack = (void *) allocate(PAGE_SIZE * NUMBER_OF_PAGES);
 	thread->userStack = fillStackFrame(entryPoint, thread->baseStack);
 	thread->pthread = currentPThread;
+	thread->state = T_READY;
 
 	//currentPthread++;
 
@@ -79,4 +80,26 @@ void * fillStackFrame(void * entryPoint, void * baseStack) {
 
 	return (void *) frame;
 	
+}
+
+void freeThreadLibrary(threadLibrary * library, int threadSize) {
+	/* Free each thread and user stack */
+	int i;
+	threadLibrary * current = library, *prev;
+	for(i = 0; i < threadSize; i++) {
+
+		/* Remove thread */
+		prev->next = current->next;
+
+		/* Free user stack */
+		deallocate(current->thread->baseStack, PAGE_SIZE * NUMBER_OF_PAGES);
+		/* Free thread */
+		deallocate(current->thread, PAGE_SIZE);
+		/* Free thread slot */
+		deallocate(current, PAGE_SIZE);
+
+
+		prev = current;
+		current = current->next;
+	}
 }

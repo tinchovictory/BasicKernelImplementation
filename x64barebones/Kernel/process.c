@@ -15,6 +15,7 @@ processPointer createProcess() {
 	process->pid = currentPid;
 	process->currentPThread = 0;
 	process->threadSize = 0;
+	process->state = READY;
 
 	currentPid++;
 

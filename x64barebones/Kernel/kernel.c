@@ -124,6 +124,7 @@ void thread2() {
 }
 
 void secondProcess() {
+	int i=0;
 	while(1) {
 		int j=0;
 		while(j<100000000){
@@ -131,7 +132,25 @@ void secondProcess() {
 		}
 		ncPrint("Process 1");
 		//addThreadToProcess(0, thread);
+		i++;
+		if(i==4) {
+			ncPrint("--MATO--");
+			removeThread(1,1);
+		}
+		//printProcessStatus();
 	}
+}
+
+void printProcess() {
+	/*int j=0;
+		while(j<100000000){
+			j++;
+		}
+	//printProcessStatus();*/
+}
+
+void p() {
+	ncPrint("hola ");
 }
 
 void init(){ //change to real init process
@@ -172,6 +191,10 @@ int main()
 	addProcess(secondProcess); //Debugging
 	addThreadToProcess(1, thread);
 	addThreadToProcess(1, thread2);
+
+	//addProcess(printProcess);
+	//addProcess(p);
+	//addThreadToProcess(1, printProcess);
 
 	//Init should add shell process
 	//addProcess(sampleCodeModuleAddress);

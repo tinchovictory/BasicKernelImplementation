@@ -49,4 +49,19 @@
 
 	processNode * getProcessWithPid(int pid);
 
+	threadNode * getThreadWithPthread(int pthread, processNode * process);
+
+	void removeProcess(int pid);
+
+	void removeThread(int pid, int pthread);
+
+	void removeDeadProcess();
+
+	void removeDeadThreads(processNode * process);
+
+
+	/* - Debuging - */
+	void printProcessStatus();
+	char * getStatus(processState state);
+
 #endif

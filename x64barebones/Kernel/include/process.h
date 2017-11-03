@@ -7,6 +7,8 @@
 
 	#define NUMBER_OF_PAGES 256
 
+	typedef enum {READY, RUNNING, BLOCKED, DEAD} processState;
+
 	/*
 		Registers are pushed into the stack instead of being stored in the pcb
 		in processSwitch function inside schedulerSwitch.asm
@@ -15,6 +17,7 @@
 	
 	typedef struct process {
 		int pid;
+		processState state;
 
 		threadLibrary * threadLibrary;
 		threadLibrary * currentThread;

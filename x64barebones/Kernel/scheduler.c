@@ -35,9 +35,20 @@ void runScheduler() {
 		return;
 	}
 
+	/* Remove all dead process */
+	removeDeadProcess();
+
 	/* Run next process */
 	numberOfTicks = 0;
+
+	currentProcess->process->state = READY;
+
+	while(currentProcess->next->process->state != READY) {
+		currentProcess = currentProcess->next;
+	}
 	currentProcess = currentProcess->next;
+
+	currentProcess->process->state = RUNNING;
 }
 
 void * switchKernelToUser () {
@@ -71,6 +82,14 @@ void addProcessToQueue(processPointer p) {
 	queueSize++;
 }
 
+void removeProcess(int pid) {
+	if(pid  == 0 || pid == 1) {
+		return;
+	}
+	processNode * process = getProcessWithPid(pid);
+	process->state = DEAD;
+}
+
 void * currentProcessEntryPoint() {
 	return currentProcess->process->currentThread->thread->entryPoint;
 }
@@ -94,10 +113,31 @@ processNode * getProcessWithPid(int pid) {
 	return NULL;
 }
 
+void removeDeadProcess() {
+	int i;
+	schedulerNode * current = processQueue, *prev;
+	for(i = 0; i < queueSize; i++) {
+		if(current->process->state == DEAD) {
+
+			/* Remove process */
+			prev->next = current->next;
+			/* Free threads library */
+			freeThreadLibrary(current->process->threadLibrary, current->process->threadSize);
+			/* Free process */
+			deallocate(current->process, PAGE_SIZE);
+			/* Free process slot */
+			deallocate(current, PAGE_SIZE);
+
+
+		}
+		prev = current;
+		current = current->next;
+	}
+}
+
 /* Threads */
 
 void threadCheck() {
-
 	if( (currentProcess->threadTick) < THREAD_QUANTUM) {
 		currentProcess->threadTick++;
 		return;
@@ -107,5 +147,90 @@ void threadCheck() {
 }
 
 void nextThread() {
+	/* Remove all dead thread */
+	removeDeadThreads(currentProcess->process);
+
+	/* Switch to the next thread */
+	currentProcess->process->currentThread->thread->state = T_READY;
+	
+	while(currentProcess->process->currentThread->next->thread->state != T_READY) {
+		currentProcess->process->currentThread = currentProcess->process->currentThread->next;
+	}
 	currentProcess->process->currentThread = currentProcess->process->currentThread->next;
+	currentProcess->process->currentThread->thread->state = T_RUNNING;
+}
+
+void removeThread(int pid, int pthread) {
+	if(pid == 0 || pid == 1) {
+		return;
+	}
+	if(pthread == 0) {
+		return;
+	}
+	processNode * process = getProcessWithPid(pid);
+	if(process->threadSize == 1) {
+		removeProcess(pid);
+	}
+	/* Remove thread */
+	threadNode * thread = getThreadWithPthread(pthread, process);
+	thread->state = DEAD;
+}
+
+
+threadNode * getThreadWithPthread(int pthread, processNode * process) {
+	threadLibrary * aux = process->threadLibrary->next;
+	while(aux != process->threadLibrary && aux->thread->pthread != pthread) {
+		aux = aux->next;
+	}
+
+	if(aux->thread->pthread == pthread) {
+		return aux->thread;
+	}
+
+	return NULL;
+}
+
+
+void removeDeadThreads(processNode * process) {
+	int i;
+	threadLibrary * current = process->threadLibrary, *prev;
+
+	for(i = 0; i < process->threadSize; i++) {
+		if(current->thread->state == T_DEAD) {
+			/* Remove thread */
+			prev->next = current->next;
+
+			/* Free user stack */
+			deallocate(current->thread->baseStack, PAGE_SIZE * NUMBER_OF_PAGES);
+			/* Free thread */
+			deallocate(current->thread, PAGE_SIZE);
+			/* Free thread slot */
+			deallocate(current, PAGE_SIZE);
+
+
+			prev = current;
+			current = current->next;
+		}
+	}
+}
+
+/* - Debuging - */
+void printProcessStatus() {
+	int i;
+	schedulerNode * node = processQueue;
+	ncNewline();
+	for(i = 0; i < queueSize; i++) {
+		ncPrint("Pid: ");ncPrintDec(node->process->pid);ncPrint(" status: ");ncPrint(getStatus(node->process->state));ncNewline();
+		node = node->next;
+	}
+}
+
+char * getStatus(processState state) {
+	switch(state) {
+		case READY: return "READY";
+		case RUNNING: return "RUNNING";
+		case BLOCKED: return "BLOCKED";
+		case DEAD: return "DEAD";
+	}
+	return NULL;
 }
