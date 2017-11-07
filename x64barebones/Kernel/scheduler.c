@@ -8,6 +8,8 @@
 #include <memoryManager.h> //TESING THEN REPLACE WITH MEMORY ALLOCATOR
 #include <naiveConsole.h>
 
+#define BUFFER_SIZE 100
+
 // Ref.: https://gitlab.com/RowDaBoat/Wyrm/blob/master/Kernel/Scheduler/Scheduler.cpp
 
 static void * kernelStack; // Pasar a .c correspondiente. Ver tipo y posición de memoria para declaración.
@@ -146,25 +148,23 @@ void unblockProcess(int pid) {
 	process->state = READY;	
 }
 
-/***************************/
-/*********CAMBIAR***********/
-/***************************/
 void printAllProcess() {
-	int numberOfProcess;
-	schedulerNode * current = processQueue;
-
-	newLine();
-	print("PID");printTab();print("Name");printTab();print("State");printTab();print("Memory");printTab();print("Threads");
-	newLine();
-
-	for(numberOfProcess = 0; numberOfProcess < queueSize; numberOfProcess++) {
-		/* Reemplazar por valores. El problema es que el driver no soporta numeros, y los tabs lo van a imprimir desparejo */
-		print("PID");printTab();print("Name");printTab();print("State");printTab();print("Memory");printTab();print("Threads");
-		newLine();
-		current = current->next;
+	schedulerNode * node = processQueue;
+	while(node != NULL && node->process->pid == 0)
+		node = node->next;
+	
+	if(queueSize < 1){
+		return;
 	}
+	do{
+		if(node->process->pid){
+			print("Name: "); print(node->process->name); printTab(); print("PID: "); print(strnum(node->process->pid,char str[BUFFER_SIZE],10)); printTab();
+			print("State: "); print(getStatus(node->process->state)); printTab(); print("Threads: "); print(strnum(node->process->threadSize,char str1[BUFFER_SIZE],10)); newLine();
+		}
+		node = node->next;
+	}while(node->process->pid != currentProcess->process->pid);
 }
-/***************************/
+
 
 
 /* Threads */

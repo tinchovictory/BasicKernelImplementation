@@ -9,9 +9,10 @@
 /* Number of process created */
 static int currentPid = 0;
 
-processPointer createProcess() {
+processPointer createProcess(const char* name) {
 	/* Create process in memory, asign a base pointer, initialize stack frame */
 	processPointer process = (processPointer) allocate(PAGE_SIZE);
+	process-> name = name;
 	process->pid = currentPid;
 	process->currentPThread = 0;
 	process->threadSize = 0;

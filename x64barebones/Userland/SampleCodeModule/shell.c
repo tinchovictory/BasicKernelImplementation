@@ -7,8 +7,11 @@ void processComand(char * buffer){
 		printf("  echo : print on screen\n");
 		printf("  hola : saludo de la consola\n");
 		printf("  2048game : Juego 2048\n");
-		printf("  chat: enter to chat\n");
-		printf("  clear:  clear screen\n");
+		printf("  chat : enter to chat\n");
+		printf("  clear : clear screen\n");
+		printf("  ps : prints processes with attributes\n");
+		printf("  philosophers : ​prints solution to philosophers problem\n");
+		printf("  prodcons : prints solution to producer-consumer problem\n");
 	}
 	else if(startsWith("echo ",buffer)){
 		puts(buffer+5);
@@ -26,6 +29,12 @@ void processComand(char * buffer){
 		clearScreen();
 		printf("Run my Chat\n");
 		//myChat();
+	}else if(!strcmp("ps",buffer)){
+		ps();
+	}else if(startsWith("philosophers",buffer)){
+		//TODO
+	}else if(startsWith("prodcons",buffer)){
+		//TODO
 	}
 	else{
 		puts("  Command not found - help for instructions");

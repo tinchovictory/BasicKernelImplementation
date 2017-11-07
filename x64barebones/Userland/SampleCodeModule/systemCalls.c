@@ -3,6 +3,7 @@
 #define SYS_CALL_WRITE 2
 #define SYS_CALL_CLEAR_SCREEN 3
 #define SYS_CALL_MEMORY 4
+#define SYS_CALL_PS 5
 
 int read(int fildes, void *buf, unsigned int nbytes){
 	return systemCall(SYS_CALL_READ, fildes, buf, nbytes);
@@ -18,4 +19,8 @@ void clearScreen(){
 
 void * memoryManagement(int memoryCode, unsigned int nbytes){
 	return (void *) systemCall(SYS_CALL_MEMORY,memoryCode,0,nbytes);
+}
+
+void ps(){
+	systemCall(SYS_CALL_PS, 1, 0, 0);
 }

@@ -75,3 +75,38 @@ void printCharacters(const char character){
 	checkEndOfScreen();
 }
 
+char * strnum(int value, char * str, int base) {
+	int i = 0;
+	char * p1, * p2;
+	int rem;
+ 
+    /* Handle 0 explicitely, otherwise empty string is printed for 0 */
+    if (value == 0)
+    {
+        str[i++] = '0';
+        str[i] = '\0';
+        return str;
+    }
+    // Process individual digits
+    while (value != 0)
+    {
+        rem = value % base;
+        str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0';
+        value = value/base;
+    }
+ 	// Append string terminator
+    str[i] = '\0';
+ 
+    // Reverse the string
+    p1 = str;
+	p2 = p - 1;
+	while (p1 < p2)
+	{
+		char tmp = *p1;
+		*p1 = *p2;
+		*p2 = tmp;
+		p1++;
+		p2--;
+	}
+    return str;
+}
