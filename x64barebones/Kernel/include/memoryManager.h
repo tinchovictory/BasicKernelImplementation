@@ -1,6 +1,11 @@
 #ifndef __MEMORYMANAGER
 #define __MEMORYMANAGER
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+
+
 #include "myMath.h"
 #include "bitmap.h"
 

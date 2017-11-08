@@ -42,7 +42,9 @@ void runScheduler() {
 	/* Run next process */
 	numberOfTicks = 0;
 
-	currentProcess->process->state = READY;
+	if(currentProcess->process->state == RUNNING) {
+		currentProcess->process->state = READY;
+	}
 
 	while(currentProcess->next->process->state != READY) {
 		currentProcess = currentProcess->next;
@@ -139,6 +141,9 @@ void removeDeadProcess() {
 void blockProcess(int pid) {
 	processNode * process = getProcessWithPid(pid);
 	process->state = BLOCKED;
+
+	numberOfTicks = QUANTUM;
+	while(process->state == BLOCKED);
 }
 
 void unblockProcess(int pid) {

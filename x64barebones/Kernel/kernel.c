@@ -14,6 +14,8 @@
 #include <scheduler.h>
 #include <memoryManager.h>
 
+#include <pipefs.h>
+
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -152,6 +154,65 @@ void p() {
 	while(1);
 }
 
+int i = 0;
+void a() {
+	char buff[50] = {0};
+	while(1){
+		int j=0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("Process A");
+		//i++;
+		if(i == 0) {
+			ncNewline();
+			ncPrint("Starting pipe: ");
+			ncPrint(do_pipe(1,2));
+			ncNewline();
+
+			ncPrint("Write");ncNewline();
+
+			buff[0] = 'h';buff[1] = 'o';buff[2] = 'l';buff[3] = 'a';
+
+			writeToPipe("1-2",buff);
+			i++;
+		}
+		if(i==3) {
+			ncPrint("Write");ncNewline();
+
+			buff[0] = 'h';buff[1] = 'o';buff[2] = 'l';buff[3] = 'a';
+
+			writeToPipe("1-2",buff);
+			i++;
+		}
+
+	}
+}
+
+void b() {
+	char buff[50] = {0};
+	while(1) {
+		int j=0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("Process B");
+		if(i==1) {
+			ncPrint("Read");ncNewline();
+			readFromPipe("1-2",buff);
+			ncPrint(buff);ncNewline();
+			i++;
+			buff[0] = 0;
+		}
+		if(i==2) {
+			i++;
+			readFromPipe("1-2",buff);
+			ncPrint("Read ");ncNewline();ncPrint(buff);ncNewline();
+			
+		}
+	}
+}
+
 void init(){ //change to real init process
 	while(1){
 		int j=0;
@@ -159,7 +220,6 @@ void init(){ //change to real init process
 			j++;
 		}
 		ncPrint("Process 0");
-		
 	}
 }
 
@@ -187,12 +247,15 @@ int main()
 	/* Add init process */
 	addProcess(init);
 
-	addProcess(secondProcess); //Debugging
+
+	addProcess(a);
+	addProcess(b);
+	/*addProcess(secondProcess); //Debugging
 	addThreadToProcess(1, thread);//Debugging
 	addThreadToProcess(1, thread2);//Debugging
 
 	addProcess(p);//Debugging
-	
+	*/
 	//Init should add shell process
 	//addProcess(sampleCodeModuleAddress);
 	
