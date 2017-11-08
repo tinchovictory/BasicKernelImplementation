@@ -74,13 +74,13 @@ void printCharacters(const char character){
 	}
 	checkEndOfScreen();
 }
-
+/*
 char * strnum(int value, char * str, int base) {
 	int i = 0;
 	char * p1, * p2;
 	int rem;
  
-    /* Handle 0 explicitely, otherwise empty string is printed for 0 */
+    /* Handle 0 explicitely, otherwise empty string is printed for 0 *//*
     if (value == 0)
     {
         str[i++] = '0';
@@ -109,4 +109,4 @@ char * strnum(int value, char * str, int base) {
 		p2--;
 	}
     return str;
-}
+}*/

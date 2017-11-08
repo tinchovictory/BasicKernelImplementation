@@ -69,11 +69,11 @@ uint64_t memoryManagement(uint64_t fnCode, uint64_t nBytes){
 	}
 	return -1;
 }
-
+/*
 uint64_t ps() {
 	PrintAllProcess();
 	return 1;
-}
+}*/
 
 uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 	if(systemCallNumber == SYS_CALL_READ){
@@ -84,9 +84,9 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * b
 		return clearScreenSys();
 	}else if(systemCallNumber == SYS_CALL_MEMORY){
 		return memoryManagement(fileDescriptor, nBytes);
-	}else if(systemCallNumber == SYS_CALL_PS){
+	}/*else if(systemCallNumber == SYS_CALL_PS){
 		return ps();
-	}
+	}*/
 	return 0;
 }
 

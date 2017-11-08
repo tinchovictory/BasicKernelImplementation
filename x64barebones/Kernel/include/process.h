@@ -18,6 +18,7 @@
 	typedef struct process {
 		int pid;
 		processState state;
+		char * name;//cambiar
 
 		threadLibrary * threadLibrary;
 		threadLibrary * currentThread;

@@ -152,7 +152,7 @@ void unblockProcess(int pid) {
 	processNode * process = getProcessWithPid(pid);
 	process->state = READY;	
 }
-
+/*
 void printAllProcess() {
 	schedulerNode * node = processQueue;
 	while(node != NULL && node->process->pid == 0)
@@ -169,7 +169,7 @@ void printAllProcess() {
 		node = node->next;
 	}while(node->process->pid != currentProcess->process->pid);
 }
-
+*/
 
 
 /* Threads */
