@@ -152,6 +152,11 @@ void unblockProcess(int pid) {
 	processNode * process = getProcessWithPid(pid);
 	process->state = READY;	
 }
+
+int getCurrentPid() {
+	return currentProcess->process->pid;
+}
+
 /*
 void printAllProcess() {
 	schedulerNode * node = processQueue;

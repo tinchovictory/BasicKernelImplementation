@@ -38,6 +38,8 @@
 	/* Return the entry point of the process set as current */
 	void * currentProcessEntryPoint();
 
+	int getCurrentPid();
+
 
 	/** Initialize scheduler **/
 	void setKernelStack();

@@ -1,25 +1,45 @@
-#define MUTEX_BLOCKED 1
-#define MUTEX_UNBLOCKED 2
+#ifndef __MUTEX__
+	#define __MUTEX__
 
-typedef struct{
-	mutexNode * prev;
-	int id;
-	int status;
-	mutexNode * next;
-} mutexNode;
+	#define MUTEX_LOCKED 1
+	#define MUTEX_UNLOCKED 2
 
-typedef struct{
-	mutexNode * first;
-	mutexNode * last;
-	int length;
-} mutexList;
+	#define NULL ((void*)0)
 
-int create(int value);
+	typedef struct blockedProcessNode {
+		int pid;
+		struct blockedProcessNode * next;
+	} blockedProcessNode;
 
-void up(int id);
+	typedef struct mutexNode{
+		int id;
+		int status;
+		struct mutexNode * next;
+		blockedProcessNode * blockedProcessList;
+	} mutexNode;
 
-void down(int id);
+	int create();
 
-void destroy( int id);
+	mutexNode * addMutex(mutexNode * currentNode, mutexNode * mutex);
 
-int isBlocked(id);
+	mutexNode * findID(int id);
+
+	void up(int id);
+
+	void down(int id);
+
+	void updateStatus(int id, int mutexStatus);
+
+	void destroy(int id);
+
+	mutexNode * destroyMutex(mutexNode * current, int mutexId);
+
+	int isLocked(int id);
+
+	void requestAccess(int id);
+
+	void addProcessToMutexList(mutexNode * mutex, int pid);
+
+	void unlockProcesses(int id);
+
+#endif
