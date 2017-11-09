@@ -76,7 +76,6 @@ void readFromPipe(char name[NAME_SIZE], char * buff) {
 		int pid = getReceiverPid(name);
 		//Block
 		blockProcess(pid);
-		return;
 	}
 
 	do {
