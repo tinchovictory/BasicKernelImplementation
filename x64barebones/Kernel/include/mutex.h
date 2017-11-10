@@ -18,7 +18,7 @@
 		blockedProcessNode * blockedProcessList;
 	} mutexNode;
 
-	int create();
+	int createMutex();
 
 	mutexNode * addMutex(mutexNode * currentNode, mutexNode * mutex);
 

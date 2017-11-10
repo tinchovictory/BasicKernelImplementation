@@ -6,7 +6,7 @@ static int counter = 0;
 static mutexNode * list = NULL;
 
 
-int create(){
+int createMutex(){
 	mutexNode * mutex = allocate(sizeof(mutexNode));
 
 	mutex->id = counter++;

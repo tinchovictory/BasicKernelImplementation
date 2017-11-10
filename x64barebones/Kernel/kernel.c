@@ -15,6 +15,7 @@
 #include <memoryManager.h>
 
 #include <pipefs.h>
+#include <mutex.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -213,13 +214,130 @@ void b() {
 	}
 }
 
+int mutexId = -1;
+void m1() {
+	int h = 0, t = 0;
+	ncPrint("Start process 1");ncNewline();
+
+	ncPrint("Start mutex");ncNewline();
+
+	mutexId = createMutex();
+
+
+	while(t<5) {
+		int j = 0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("Process 1 ");
+		t++;
+	}
+
+	requestAccess(mutexId);
+	ncNewline();ncPrint("Lock mutex");ncNewline();			
+	down(mutexId);
+
+	t = 0;
+	while(t<20) {
+		int j=0;
+
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("Process 1 ");
+		t++;
+	}
+
+	ncPrint("Unock mutex");ncNewline();			
+	up(mutexId);	
+
+	t = 0;
+	while(t<3) {
+		int j = 0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("Process 1 ");
+		t++;
+	}
+
+	ncPrint("Stop mutex");ncNewline();
+	//destroy(mutexId);
+
+	ncPrint("Stop process 1");ncNewline();
+
+	//removeProcess(1);
+	while(1);
+}
+
+
+void m2() {
+	int h = 0, t = 0;
+	ncPrint("Start process 2");ncNewline();
+
+	/*ncPrint("Start mutex");ncNewline();
+
+	mutexId = createMutex();
+*/
+	while(mutexId == -1) {
+		ncPrint("waiting for mutex");ncNewline();
+		t = 0;
+		while(t<15) {
+			int j = 0;
+			while(j<100000000){
+				j++;
+			}
+			ncPrint("Process 2 ");
+			t++;
+		}
+	}
+
+	ncNewline();ncPrint("Request Access to mutex");ncNewline();
+	requestAccess(mutexId);
+	ncNewline();ncPrint("Lock mutex");ncNewline();			
+	down(mutexId);
+
+	t = 0;
+	while(t<20) {
+		int j=0;
+
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("Process 2 ");
+		t++;
+	}
+
+	ncPrint("Unock mutex");ncNewline();			
+	up(mutexId);	
+
+	t = 0;
+	while(t<3) {
+		int j = 0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("Process 2 ");
+		t++;
+	}
+
+	ncPrint("Stop mutex");ncNewline();
+	destroy(mutexId);
+
+	ncPrint("Stop process 2");ncNewline();
+
+	//removeProcess(2);
+	while(1);
+}
+
+
 void init(){ //change to real init process
 	while(1){
 		int j=0;
 		while(j<100000000){
 			j++;
 		}
-		ncPrint("Process 0");
+		ncPrint("P0");
 	}
 }
 
@@ -248,8 +366,8 @@ int main()
 	addProcess(init);
 
 
-	addProcess(a);
-	addProcess(b);
+	addProcess(m1);
+	addProcess(m2);
 	/*addProcess(secondProcess); //Debugging
 	addThreadToProcess(1, thread);//Debugging
 	addThreadToProcess(1, thread2);//Debugging
