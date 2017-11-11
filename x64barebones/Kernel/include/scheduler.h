@@ -1,5 +1,5 @@
-#ifndef __SCHEDULER
-	#define __SCHEDULER
+#ifndef __SCHEDULER__
+	#define __SCHEDULER__
 
 	#include <process.h>
 

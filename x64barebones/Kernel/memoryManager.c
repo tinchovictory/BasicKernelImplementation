@@ -41,8 +41,6 @@ void getBlocksAmount (uint64_t totalMem) {
 		blocksAmount--;
 		remainingMem += PAGE_SIZE;
 	}
-
-	return;
 }
 
 int enoughSpace (int remainingMem) {
@@ -60,8 +58,6 @@ void mapInit () {
 	for(i = 0 ; i < size; i++) { // Reset map.
         usedMap[i] = 0;
 	}
-
-	return;
 }
 
 /***********************************************************
@@ -102,8 +98,6 @@ void reserve (int blocksRequest, int startingBlock) {
 	for (i = startingBlock ; i < limit ; i++) {
 		setBit (usedMap,i);
 	}
-	
-	return;
 }
 
 /***********************************************************

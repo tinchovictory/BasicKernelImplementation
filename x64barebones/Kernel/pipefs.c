@@ -59,8 +59,6 @@ void writeToPipe(char name[NAME_SIZE], char * buff) {
 
 		pipe->writePointer = pointerPosition(pipe->writePointer,pipe->buffer);
 	}
-
-
 }
 
 void readFromPipe(char name[NAME_SIZE], char * buff) {
@@ -85,8 +83,6 @@ void readFromPipe(char name[NAME_SIZE], char * buff) {
 	} while( pipe->readPointer != pipe->writePointer );
 
 	*(pipe->readPointer) = 0;
-
-	return;
 }
 
 char * pointerPosition (char * currentPointer, char * buffer) {
@@ -125,8 +121,6 @@ void createName(int fromPid, int toPid, char name[NAME_SIZE]) {
 	name[i++] = '-';
 
 	createPidName(toPid,name,i);
-
-	return;
 }
 
 int createPidName(int pid, char name[NAME_SIZE], int startPos) {

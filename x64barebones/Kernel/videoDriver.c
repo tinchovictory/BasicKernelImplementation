@@ -1,28 +1,47 @@
+#include "videoDriver.h"
 #include <stdint.h>
-#define WINDOW_WIDTH 80
-#define WINDOW_HEIGHT 25
-#define DEFAULT_COLOR 0x0F
-#define END_OF_SCREEN WINDOW_WIDTH*2 * WINDOW_HEIGHT
 
 static char * screen = (char *)0xB8000;
 static char * currentPosition = (char*)0xB8000;
 
 void clearScreen(){
-	for(int i = 0; i < WINDOW_WIDTH*2 * WINDOW_HEIGHT; i++){
+	clear(screen);
+	currentPosition = screen;
+}
+
+// Separated from resetScreen for reusability purposes in screenLoader.c
+void clear(char * screenToClear) {
+	int i;
+	for(i = 0; i < WINDOW_SIZE; i++){
 		if(i%2 == 1){
-			screen[i] = DEFAULT_COLOR;
+			screenToClear[i] = DEFAULT_COLOR;
 		}else{
-			screen[i] = ' ';
+			screenToClear[i] = ' ';
 		}
+	}
+}
+
+void setScreen(char * data) {
+	int i = 0;
+	for(i = 0; i < WINDOW_SIZE; i++){
+		screen[i] = data[i];
 	}
 	currentPosition = screen;
 }
 
+void transferContent(char * backup) {
+	int i = 0;
+	for(i = 0 ; i < WINDOW_SIZE ; i++){
+		backup[i] = screen[i];
+	}
+}
+
 void moveScreenUp(){
-	for(int i = 0; i< WINDOW_WIDTH*2 * (WINDOW_HEIGHT-1); i++){
+	int i;
+	for(i = 0; i< WINDOW_WIDTH*2 * (WINDOW_HEIGHT-1); i++){
 		screen[i] = screen[i+WINDOW_WIDTH*2];
 	}
-	for(int i = 0; i < WINDOW_WIDTH*2; i+=2){
+	for(i = 0; i < WINDOW_WIDTH*2; i+=2){
 		*(screen + END_OF_SCREEN - WINDOW_WIDTH*2 + i) = ' ';
 		*(screen + END_OF_SCREEN - WINDOW_WIDTH*2 + i + 1) = DEFAULT_COLOR;
 	}
@@ -74,39 +93,3 @@ void printCharacters(const char character){
 	}
 	checkEndOfScreen();
 }
-/*
-char * strnum(int value, char * str, int base) {
-	int i = 0;
-	char * p1, * p2;
-	int rem;
- 
-    /* Handle 0 explicitely, otherwise empty string is printed for 0 *//*
-    if (value == 0)
-    {
-        str[i++] = '0';
-        str[i] = '\0';
-        return str;
-    }
-    // Process individual digits
-    while (value != 0)
-    {
-        rem = value % base;
-        str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0';
-        value = value/base;
-    }
- 	// Append string terminator
-    str[i] = '\0';
- 
-    // Reverse the string
-    p1 = str;
-	p2 = p - 1;
-	while (p1 < p2)
-	{
-		char tmp = *p1;
-		*p1 = *p2;
-		*p2 = tmp;
-		p1++;
-		p2--;
-	}
-    return str;
-}*/
