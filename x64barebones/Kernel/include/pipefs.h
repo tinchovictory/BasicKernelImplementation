@@ -22,11 +22,14 @@
 	pipeNode * addPipeToList(pipeNode * list, pipeNode * pipe);
 	void writeToPipe(char name[NAME_SIZE], char * buff);
 	void readFromPipe(char name[NAME_SIZE], char * buff);
+	char * pointerPosition(char * currentPointer, char * buffer);
 	pipeNode * getPipe(char name[NAME_SIZE]);
 	int equalName(char * str1, char * str2);
 
 
 	void createName(int fromPid, int toPid, char name[NAME_SIZE]);
+	int createPidName(int pid, char name[NAME_SIZE], int startPos);
+	int inversedId(int id, char aux[NAME_SIZE]);
 	int getReceiverPid(char name[NAME_SIZE]);
 
 #endif
