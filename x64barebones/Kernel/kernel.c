@@ -16,6 +16,7 @@
 
 #include <pipefs.h>
 #include <mutex.h>
+#include <screenLoader.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -343,6 +344,27 @@ void init(){ //change to real init process
 
 
 
+void onFocusTest(){ //change to real init process
+	addProcess(sampleCodeModuleAddress);
+
+	loadScreen(0);
+
+	addProcess(sampleCodeModuleAddress);
+
+	//addProcess(changeOnFocus);
+}
+
+void changeOnFocus(){ //change to real init process
+	while(1){
+		int j=0;
+		while(j<100000000){
+			j++;
+		}
+		ncPrint("P0");
+	}
+}
+
+
 int main()
 {	
 
@@ -363,11 +385,12 @@ int main()
 	//((EntryPoint)sampleCodeModuleAddress)();
 
 	/* Add init process */
-	addProcess(init);
+	//addProcess(init);
 
+	onFocusTest();
 
-	addProcess(m1);
-	addProcess(m2);
+	//addProcess(m1);
+	//addProcess(m2);
 	/*addProcess(secondProcess); //Debugging
 	addThreadToProcess(1, thread);//Debugging
 	addThreadToProcess(1, thread2);//Debugging

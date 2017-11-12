@@ -3,6 +3,8 @@
 #include <keyBoardDriver.h>
 #include <RTL8139.h>
 #include "scheduler.h"
+#include "screenLoader.h"
+#include <naiveConsole.h>
 
 #define SYS_CALL_READ 1
 #define SYS_CALL_WRITE 2
@@ -16,7 +18,7 @@
 #define STANDARD_IO_FD 1
 #define ETHERNET_FD 2
 
-static void * memory = (void *)0x900000;
+//static void * memory = (void *)0x900000;
 
 uint64_t clearScreenSys(){
 	clearScreen();
@@ -24,8 +26,10 @@ uint64_t clearScreenSys(){
 }
 
 uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
-
 	if(fileDescriptor == STANDARD_IO_FD){
+
+		blockIfNotOnFocus();
+
 		char * myBuf = (char *) buf;
 		int cont = 1, readBytes=0;
 		for (int i = 0; i < nBytes && cont; i++){
@@ -43,15 +47,21 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 	return -1;
 }
 
+void blockIfNotOnFocus(){
+	if (!isCurrentProcessOnFocus()) {
+		ncNewline();ncPrintDec(getCurrentPid());
+		blockProcess( getCurrentPid() );
+	}
+}
+
 uint64_t write(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 
 	if(fileDescriptor == STANDARD_IO_FD){
-		char * myBuf = (char *) buf;
-		int i;
-		for(i = 0; i < nBytes && myBuf[i] != 0; i++){
-			printCharacters(myBuf[i]);
+		if (isCurrentProcessOnFocus()) {
+			return writeToVideo(buf,nBytes);
+		} else {
+			return writeToMyScreen(buf,nBytes);
 		}
-		return i;
 	}else if(fileDescriptor == ETHERNET_FD){
 		sendMsg(*((ethMsg *) buf));
 		return nBytes;
@@ -59,6 +69,28 @@ uint64_t write(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 	return -1;
 }
 
+int writeToVideo(void * buf, uint64_t nBytes) {
+	char * myBuf = (char *) buf;
+	int i;
+	for(i = 0; i < nBytes && myBuf[i] != 0; i++){
+		printCharacters(myBuf[i]);
+	}
+	return i;
+}
+
+int writeToMyScreen(void * buf, uint64_t nBytes) {
+	char * myBuf = (char *) buf;
+	char * myScreen = getCurrentScreen();
+	char * myScreenPos = getCurrentScreenPosition();
+	int i;
+
+	for(i = 0; i < nBytes && myBuf[i] != 0; i++){
+		printCharactersInner(myBuf[i],myScreen,&myScreenPos);
+	}
+	return i;
+}
+
+/*
 uint64_t memoryManagement(uint64_t fnCode, uint64_t nBytes){
 	if(fnCode == MEMORY_ASIGN_CODE){//asigno memoria
 		void * ptr = memory;
@@ -69,7 +101,7 @@ uint64_t memoryManagement(uint64_t fnCode, uint64_t nBytes){
 	}
 	return -1;
 }
-/*
+
 uint64_t ps() {
 	PrintAllProcess();
 	return 1;
@@ -82,11 +114,10 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * b
 		return write(fileDescriptor, buf, nBytes);
 	}else if(systemCallNumber == SYS_CALL_CLEAR_SCREEN){
 		return clearScreenSys();
-	}else if(systemCallNumber == SYS_CALL_MEMORY){
-		return memoryManagement(fileDescriptor, nBytes);
-	}/*else if(systemCallNumber == SYS_CALL_PS){
-		return ps();
-	}*/
+	} //else if(systemCallNumber == SYS_CALL_MEMORY){
+		//return memoryManagement(fileDescriptor, nBytes);
+	//}/*else if(systemCallNumber == SYS_CALL_PS){
+	//	return ps();
+	//}*/
 	return 0;
 }
-

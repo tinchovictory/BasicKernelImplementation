@@ -3,7 +3,7 @@
 
 	#include <process.h>
 
-	#define QUANTUM 100
+	#define QUANTUM 5
 
 	#define NULL ((void *)0)
 

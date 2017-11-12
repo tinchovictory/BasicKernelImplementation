@@ -30,6 +30,8 @@ void runScheduler() {
 		return;
 	}
 
+	ncPrint("Hola");ncPrintDec(getCurrentPid());ncNewline();
+
 	/* Check quantum */
 	if(numberOfTicks < QUANTUM) {
 		numberOfTicks++;

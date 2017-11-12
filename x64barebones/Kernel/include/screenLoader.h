@@ -3,17 +3,28 @@
 
 	#include <videoDriver.h>
 	#include <memoryManager.h>
+	#include <scheduler.h>
+
+	#define NO_FOCUS -1
 
 	typedef struct screenNode {
 		int pid;
 		char * screen;
+		char * currentPosition;
 		struct screenNode * next;
 	} screenNode;
 
 	int loadScreen(int pid);
+
+	int isCurrentProcessOnFocus();
+
+	char * getCurrentScreen();
+	char * getCurrentScreenPosition();
+
 	void saveScreen();
-	char * addScreen(int pid);
-	char * newScreen();
+	
+	screenNode * addScreen(int pid);
+	screenNode * newScreenNode();
 
 	char * findScreenByPid(int pid);
 	screenNode * findScreenNodeByPid(int pid);

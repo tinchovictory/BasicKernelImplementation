@@ -11,23 +11,24 @@
 
 	void clearScreen();
 
-	void moveScreenUp();
+	void moveScreenUp(char * myScreen, char ** myCurrentPos);
 
-	void checkEndOfScreen();
+	void checkEndOfScreen(char * myScreen, char ** myCurrentPos);
 
-	void print( const char * string );
+	void print(const char * string);
 
 	void printCharacters(const char character);
+	void printCharactersInner(const char character, char * myScreen, char ** myCurrentPos);
 
-	void newLine();
+	void newLine(char * myScreen, char ** myCurrentPos);
 
-	void backSpace();
+	void backSpace(char * myScreen, char ** myCurrentPos);
 
-	void printTab();
+	void printTab(char ** myCurrentPos);
 
 	// New functions for Operating Systems project
 
-	void setScreen(char * data);
+	char * setScreen(char * data);
 
 	void transferContent(char * backup);
 

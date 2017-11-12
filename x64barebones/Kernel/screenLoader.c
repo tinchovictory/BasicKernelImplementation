@@ -1,62 +1,92 @@
 #include "screenLoader.h"
 
 static screenNode * list = NULL;
-static char * onFocusScreen = NULL;
+static int onFocusPid = NO_FOCUS;
 
 int loadScreen(int pid) {
-	char * screen = findScreenByPid(pid);
+	screenNode * node = findScreenNodeByPid(pid);
 
 	// If the pid has no screen data assigned, I create one.
-	if (screen == NULL) {
-		screen = addScreen(pid);
+	if (node == NULL) {
+		node = addScreen(pid);
 
-		if (screen == NULL) {
+		if (node == NULL) {
 			return 0;
 		}	
 	}
 	saveScreen(); // Save previous on focus video data for future use.
+	// Move the new on focus video data to the screen.
+	node->currentPosition = setScreen(node->screen);
 
-	setScreen(screen); // Move the new on focus video data to the screen.
-
-	onFocusScreen = screen;
+	onFocusPid = pid;
 
 	return 1;
 }
 
-void saveScreen() {
-	if (onFocusScreen != NULL) {
-		transferContent(onFocusScreen); // Save content currently stored in the video.
-	}
+int isCurrentProcessOnFocus() {
+	return onFocusPid == getCurrentPid();
 }
 
-char * addScreen(int pid) {
-	screenNode * node = (screenNode *)allocate(sizeof(screenNode));
+char * getCurrentScreen() {
+	screenNode * node = findScreenNodeByPid(getCurrentPid());
+
+	if (node == NULL) {
+		node = addScreen(getCurrentPid());
+
+		if (node == NULL) {
+			return NULL;
+		}	
+	}
+	return node;
+}
+
+char * getCurrentScreenPosition() {
+	screenNode * node = getCurrentScreen();
 
 	if (node == NULL) {
 		return NULL;
 	}
+	return node->currentPosition;
+}
 
-	node->screen = newScreen();
+void saveScreen() {
+	if (onFocusPid != NO_FOCUS) {
+		// Save content currently stored in the video.
+		transferContent(findScreenByPid(onFocusPid));
+	}
+}
 
-	if (node->screen == NULL) {
+screenNode * addScreen(int pid) {
+	screenNode * node = newScreenNode();
+
+	if (node == NULL) {
 		return NULL;
 	}
 	node->pid = pid;
 	node->next = list;
 	list = node;
 
-	return node->screen;
+	return node;
 }
 
-char * newScreen() {
-	char * screen = (char *)allocate(WINDOW_SIZE*sizeof(char *));
+screenNode * newScreenNode() {
+	screenNode * node = (screenNode *)allocate(sizeof(screenNode));
 
-	if (screen == NULL) {
+	if (node == NULL) {
 		return NULL;
 	}
-	clear(screen);
 
-	return screen;
+	node->screen = (char *)allocate(WINDOW_SIZE*sizeof(char *));
+
+	if (node->screen == NULL) {
+		deallocate(node, sizeof(screenNode));
+		return NULL;
+	}
+	clear(node->screen);
+
+	node->currentPosition = node->screen;
+
+	return node;
 }
 
 char * findScreenByPid(int pid) {
@@ -78,8 +108,8 @@ screenNode * findScreenNodeByPid(int pid) {
 }
 
 void removeScreen(int pid) {
-	if (findScreenByPid(pid) == onFocusScreen) {
-		onFocusScreen = NULL;
+	if (pid == onFocusPid) {
+		onFocusPid = NO_FOCUS;
 	}
 	removeScreenInner(list,pid);
 }

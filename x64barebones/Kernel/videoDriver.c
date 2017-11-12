@@ -4,7 +4,7 @@
 static char * screen = (char *)0xB8000;
 static char * currentPosition = (char*)0xB8000;
 
-void clearScreen(){
+void clearScreen() {
 	clear(screen);
 	currentPosition = screen;
 }
@@ -21,12 +21,16 @@ void clear(char * screenToClear) {
 	}
 }
 
-void setScreen(char * data) {
+char * setScreen(char * data) {
+	char * aux = currentPosition;
 	int i = 0;
+
 	for(i = 0; i < WINDOW_SIZE; i++){
 		screen[i] = data[i];
 	}
 	currentPosition = screen;
+
+	return aux;
 }
 
 void transferContent(char * backup) {
@@ -36,21 +40,21 @@ void transferContent(char * backup) {
 	}
 }
 
-void moveScreenUp(){
+void moveScreenUp(char * myScreen, char ** myCurrentPos){
 	int i;
 	for(i = 0; i< WINDOW_WIDTH*2 * (WINDOW_HEIGHT-1); i++){
-		screen[i] = screen[i+WINDOW_WIDTH*2];
+		myScreen[i] = myScreen[i+WINDOW_WIDTH*2];
 	}
 	for(i = 0; i < WINDOW_WIDTH*2; i+=2){
-		*(screen + END_OF_SCREEN - WINDOW_WIDTH*2 + i) = ' ';
-		*(screen + END_OF_SCREEN - WINDOW_WIDTH*2 + i + 1) = DEFAULT_COLOR;
+		*(myScreen + END_OF_SCREEN - WINDOW_WIDTH*2 + i) = ' ';
+		*(myScreen + END_OF_SCREEN - WINDOW_WIDTH*2 + i + 1) = DEFAULT_COLOR;
 	}
-	currentPosition = screen + END_OF_SCREEN - WINDOW_WIDTH*2;
+	*myCurrentPos = myScreen + END_OF_SCREEN - WINDOW_WIDTH*2;
 }
 
-void checkEndOfScreen(){
-	if(currentPosition >= screen + END_OF_SCREEN){
-		moveScreenUp();
+void checkEndOfScreen(char * myScreen, char ** myCurrentPos){
+	if(*myCurrentPos >= myScreen + END_OF_SCREEN){
+		moveScreenUp(myScreen,myCurrentPos);
 	}
 }
 
@@ -58,38 +62,42 @@ void print(const char * string){
 	while(*string){
 		*(currentPosition++) = *(string++);
 		*(currentPosition++) = DEFAULT_COLOR;
-		checkEndOfScreen();
+		checkEndOfScreen(screen,&currentPosition);
 	}
 }
 
-void newLine(){
-	currentPosition +=  (screen - currentPosition) % (WINDOW_WIDTH*2) + WINDOW_WIDTH*2;
-	checkEndOfScreen();
+void newLine(char * myScreen, char ** myCurrentPos){
+	*myCurrentPos +=  (myScreen - *myCurrentPos) % (WINDOW_WIDTH*2) + WINDOW_WIDTH*2;
+	checkEndOfScreen(myScreen,myCurrentPos);
 }
 
-void backSpace(){
-	if(currentPosition == screen){
+void backSpace(char * myScreen, char ** myCurrentPos){
+	if(*myCurrentPos == myScreen){
 		return;
 	}
-	currentPosition-=2;
-	*currentPosition = ' ';
+	*myCurrentPos -= 2;
+	*(*myCurrentPos) = ' ';
 }
 
-void printTab(){
-	currentPosition += 8; 
+void printTab(char ** myCurrentPos){
+	*myCurrentPos += 8; 
 }
 
 void printCharacters(const char character){
-	//analizo caracteres especiales
+	printCharactersInner(character,screen,&currentPosition);
+}
+
+void printCharactersInner(const char character, char * myScreen, char ** myCurrentPos){
+	// Check for special characters.
 	if(character == '\n'){
-		newLine();
+		newLine(myScreen,myCurrentPos);
 	}else if(character == '\b'){
-		backSpace();
+		backSpace(myScreen,myCurrentPos);
 	}else if(character == '\t'){
-		printTab();
+		printTab(myCurrentPos);
 	}else{
-		*(currentPosition++) = character;
-		*(currentPosition++) = DEFAULT_COLOR;
+		*((*myCurrentPos)++) = character;
+		*((*myCurrentPos)++) = DEFAULT_COLOR;
 	}
-	checkEndOfScreen();
+	checkEndOfScreen(myScreen,myCurrentPos);
 }
