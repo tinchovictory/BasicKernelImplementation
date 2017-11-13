@@ -3,7 +3,7 @@
 
 	#include <process.h>
 
-	#define QUANTUM 5
+	#define QUANTUM 2
 
 	#define NULL ((void *)0)
 
@@ -64,6 +64,8 @@
 	void blockProcess(int pid);
 
 	void unblockProcess(int pid);
+
+	void yieldSwitch();
 
 	void printAllProcess();
 

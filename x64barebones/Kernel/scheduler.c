@@ -148,12 +148,25 @@ void blockProcess(int pid) {
 	process->state = BLOCKED;
 
 	numberOfTicks = QUANTUM;
-	while(process->state == BLOCKED);
+	//while(process->state == BLOCKED);
 }
 
 void unblockProcess(int pid) {
 	processNode * process = getProcessWithPid(pid);
-	process->state = READY;	
+	/* Check for dead process */
+	if(process->state == BLOCKED) {
+		process->state = READY;
+	}
+}
+
+void yieldSwitch() {
+	if(currentProcess == NULL) {
+		return;
+	}
+	if(currentProcess->process->state == BLOCKED) {
+		numberOfTicks = QUANTUM;
+		runScheduler();
+	}
 }
 
 int getCurrentPid() {
@@ -179,6 +192,10 @@ void printAllProcess() {
 }
 */
 
+int getNumberOfBlockedProcess() {
+	schedulerQueue node = processQueue;
+
+}
 
 /* Threads */
 

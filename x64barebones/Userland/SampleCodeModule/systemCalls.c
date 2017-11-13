@@ -5,8 +5,25 @@
 #define SYS_CALL_MEMORY 4
 #define SYS_CALL_PS 5
 
+#include <stdio.h>
+
 int read(int fildes, void *buf, unsigned int nbytes){
-	return systemCall(SYS_CALL_READ, fildes, buf, nbytes);
+	int value;
+	do {
+		value = systemCall(SYS_CALL_READ, fildes, buf, nbytes);
+		//if(value == 0) {
+			//switch process
+			//printf("yield\n");
+			yield();
+		//}
+	} while(value == 0);
+	//clearScreen();
+	//printf("Sali\n");
+	/*value = systemCall(SYS_CALL_READ, fildes, buf, nbytes);
+	if(value != 0) {
+		printf("En user es: %d\n", value);
+	}*/
+	return value; 
 }
 
 int write(int fildes, void *buf, unsigned int nbytes){

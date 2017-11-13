@@ -10,6 +10,7 @@
 #define ETHERNET_FD 2
 
 uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * buf, uint64_t nBytes); // asm function
+uint64_t yield();
 
 
 /* Returns the number of bytes that were read. If value is negative, then the system call returned an error. */

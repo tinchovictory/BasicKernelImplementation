@@ -1,7 +1,7 @@
 #ifndef __THREADS__
 	#define __THREADS__
 
-	#define THREAD_QUANTUM 20
+	#define THREAD_QUANTUM 1
 
 	#define NULL ((void *)0)
 

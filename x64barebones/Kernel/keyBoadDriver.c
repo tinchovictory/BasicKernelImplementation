@@ -1,4 +1,8 @@
 #include "keyBoardDriver.h"
+
+#include <scheduler.h>
+#include <screenLoader.h>
+
 #define BUFFER_SIZE 100
 #define L_SHIFT_PRESSED 0x2A
 #define L_SHIFT_RELEASED 0xAA
@@ -54,6 +58,11 @@ void keyBoardHandler(){
 
 		if(*last == 0 && character != 0){
 			*(last++) = character;
+
+			/* Unblock on focus process */
+			unblockProcess(getFocusProcessPid());
+			//ncNewline();ncPrint("unblock");ncNewline();
+
 			if(last - buffer >= BUFFER_SIZE){ //vuelvo al principio del buffer
 				last = buffer;
 			}

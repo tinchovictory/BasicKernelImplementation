@@ -49,7 +49,12 @@ int getchar(){
 		return buffer[--i];
 	}
 	char c;
-	while((read(1,&c,1)==0));
+	int j = 0;
+	while((read(1,&c,1)==0)){
+		j++;
+	};
+	//printf("Funciono %d veces\n", j);
+	//while(1);
 	return c;
 }
 

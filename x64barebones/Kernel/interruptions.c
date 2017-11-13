@@ -12,6 +12,7 @@ void printCharacter();
 void irq0Handler();
 void irq1Handler();
 void irq11Handler();
+void yieldHandler();
 void sysCallHandler();
 void setPicMaster(uint16_t);
 void setPicSlave(uint16_t);
@@ -63,6 +64,8 @@ void initializeInterruptions(){
 	
 	iSetHandler(0x21, (uint64_t) irq1Handler);
 	iSetHandler(0x2B, (uint64_t) irq11Handler);
+
+	iSetHandler(0x71, (uint64_t) yieldHandler);
 
 	iSetHandler(0x80, (uint64_t) sysCallHandler); //software interruptions, systemcall
 

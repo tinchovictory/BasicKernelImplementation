@@ -36,6 +36,10 @@ int isCurrentProcessOnFocus() {
 	return onFocusPid == getCurrentPid();
 }
 
+int getFocusProcessPid() {
+	return onFocusPid;
+}
+
 screenNode * getCurrentScreenNode() {
 	screenNode * node = findScreenNodeByPid(getCurrentPid());
 

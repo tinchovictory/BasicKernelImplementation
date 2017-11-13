@@ -2,7 +2,7 @@
 #include <videoDriver.h>
 #include <keyBoardDriver.h>
 #include <RTL8139.h>
-#include "scheduler.h"
+#include <scheduler.h>
 #include "screenLoader.h"
 #include "naiveConsole.h"
 
@@ -48,6 +48,10 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 				readBytes++;
 			}
 		}
+		
+		if(readBytes == 0) {
+			blockProcess(getCurrentPid());	
+		}
 		return readBytes;
 	}else if(fileDescriptor == ETHERNET_FD){
 		return getMsg((ethMsg *) buf);
@@ -57,12 +61,12 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 
 int blockIfNotOnFocus(){
 	if (!isCurrentProcessOnFocus()) {
-		//ncNewline();ncPrintDec(getCurrentPid());
-		//blockProcess( getCurrentPid() );
+		blockProcess(getCurrentPid());
 		return 1;
 	}
 	return 0;
 }
+
 
 uint64_t write(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 	if(fileDescriptor == STANDARD_IO_FD){
@@ -151,6 +155,15 @@ void ps(){
 	printAllProcess();
 }
 
+uint64_t blockProcessWithPid(uint64_t pid) {
+
+	return 1;
+}
+
+uint64_t yield(uint64_t pid) {
+
+	return 1;
+}
 
 
 uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * buf, uint64_t nBytes){
@@ -167,7 +180,6 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * b
 	//}*/
 	else if(systemCallNumber == SYS_CALL_CREATE_PROCESS){
 		return pcreate(buf);
-
 	}else if(systemCallNumber == SYS_CALL_END_PROCESS){
 		pkill(fileDescriptor);
 

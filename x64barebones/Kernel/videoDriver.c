@@ -16,6 +16,7 @@ void clear(char * screenToClear) {
 		if(i%2 == 1){
 			screenToClear[i] = DEFAULT_COLOR;
 		}else{
+			//screenToClear[i] = ' ';
 			screenToClear[i] = ' ';
 		}
 	}
