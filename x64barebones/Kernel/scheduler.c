@@ -6,7 +6,7 @@
 #include <videoDriver.h>
 
 #include <memoryManager.h> //TESING THEN REPLACE WITH MEMORY ALLOCATOR
-#include "naiveConsole.h"
+#include <naiveConsole.h>
 
 #define BUFFER_SIZE 100
 #define PRINT_THREADS 0
@@ -31,7 +31,7 @@ void runScheduler() {
 		return;
 	}
 
-	ncPrint("Hola");ncPrintDec(getCurrentPid());ncNewline();
+	//ncPrint("Hola");ncPrintDec(getCurrentPid());ncNewline();
 
 	/* Check quantum */
 	if(numberOfTicks < QUANTUM) {
@@ -284,42 +284,42 @@ char * getStatus(processState state) {
 void printThreadStatus(threadState state){
 	switch(state){
 		case T_READY:
-			ncprint("READY");
+			ncPrint("READY");
 		case T_RUNNING:
-			ncprint("RUNNING");
+			ncPrint("RUNNING");
 		case T_BLOCKED:
-			ncprint("BLOCKED");
+			ncPrint("BLOCKED");
 		default:
-			ncprint("DEAD");
+			ncPrint("DEAD");
 	}
 }
 
 void printThread(threadNode  * thread){
-	ncprint("Thread id: ");ncPrintDec(thread->pthread);ncNewline();
-	ncprint("Thread status: ");printThreadStatus(thread->state);ncNewline();
+	ncPrint("Thread id: ");ncPrintDec(thread->pthread);ncNewline();
+	ncPrint("Thread status: ");printThreadStatus(thread->state);ncNewline();
 }
 
 void printProcessStatus(processState state){
 	switch(state){
 		case READY:
-			ncprint("READY");
+			ncPrint("READY");
 		case RUNNING:
-			ncprint("RUNNING");
+			ncPrint("RUNNING");
 		case BLOCKED:
-			ncprint("BLOCKED");
+			ncPrint("BLOCKED");
 		default:
-			ncprint("DEAD");
+			ncPrint("DEAD");
 	}
 }
 
 void printProcess(processNode * process){
 	
-	ncPrint("Process pid: "); ncPrintDec(process->pid);ncNewLine();
-	ncPrint("Process status: ");printProcessStatus(process->state);ncNewLine();
+	ncPrint("Process pid: "); ncPrintDec(process->pid);ncNewline();
+	ncPrint("Process status: ");printProcessStatus(process->state);ncNewline();
 
 	threadLibrary  * lib = process->threadLibrary;
 	while(lib != NULL){
-		ncPrint("   ");printThread(lib->thread);ncNewLine();
+		ncPrint("   ");printThread(lib->thread);ncNewline();
 		lib = lib->next;
 	}
 }
