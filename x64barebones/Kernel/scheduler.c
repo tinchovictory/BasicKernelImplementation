@@ -6,9 +6,10 @@
 #include <videoDriver.h>
 
 #include <memoryManager.h> //TESING THEN REPLACE WITH MEMORY ALLOCATOR
-#include <naiveConsole.h>
+#include "naiveConsole.h"
 
 #define BUFFER_SIZE 100
+#define PRINT_THREADS 0
 
 // Ref.: https://gitlab.com/RowDaBoat/Wyrm/blob/master/Kernel/Scheduler/Scheduler.cpp
 
@@ -323,6 +324,17 @@ void printProcess(processNode * process){
 	}
 }
 
+void printProcessPID(int pid){
+	schedulerQueue process = processQueue;
+	while(processQueue != NULL){
+		if(process->process->pid == pid){
+			printProcess(process->process);
+			return;
+		}
+		process = process->next;
+	}
+}
+
 void printAllProcess(int mode){
 	if(processQueue == NULL){
 		return;
@@ -331,16 +343,5 @@ void printAllProcess(int mode){
 	while(queue->process != NULL){
 		printProcess(queue->process);
 		queue = queue->next;
-	}
-}void printThreadStatus(threadState state){
-	switch(state){
-		case T_READY:
-			ncprint("READY");
-		case T_RUNNING:
-			ncprint("RUNNING");
-		case T_BLOCKED:
-			ncprint("BLOCKED");
-		default:
-			ncprint("DEAD");
 	}
 }

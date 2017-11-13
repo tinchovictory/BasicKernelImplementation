@@ -72,4 +72,6 @@
 	void printProcessStatus();
 	char * getStatus(processState state);
 
+	void printProcessPID(int pid);
+
 #endif

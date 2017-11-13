@@ -4,13 +4,20 @@
 #include <RTL8139.h>
 #include "scheduler.h"
 #include "screenLoader.h"
-#include <naiveConsole.h>
+#include "naiveConsole.h"
 
 #define SYS_CALL_READ 1
 #define SYS_CALL_WRITE 2
 #define SYS_CALL_CLEAR_SCREEN 3
 #define SYS_CALL_MEMORY 4
 #define SYS_CALL_PS 5
+
+#define SYS_CALL_CREATE_PROCESS 7
+#define SYS_CALL_END_PROCESS 8
+#define SYS_CALL_LS_PROCESS 9
+
+#define SYS_CALL_CREATE_THREAD 10
+#define SYS_CALL_END_THREAD 11
 
 #define MEMORY_ASIGN_CODE 0
 #define MEMORY_FREE_CODE 1
@@ -118,6 +125,34 @@ uint64_t ps() {
 	return 1;
 }*/
 
+
+uint64_t pcreate(void * entryPoint){
+	return addProcess(entryPoint);
+}
+
+uint64_t tcreate(uint64_t pid, void * entryPoint){
+	return addThreadToProcess(pid, entryPoint);
+
+}
+
+void pkill(uint64_t pid){
+	removeProcess(pid);
+}
+
+void tkill(uint64_t pid, uint64_t pthread){
+	removeThread(pid, pthread);
+}
+
+void ls(uint64_t pid){
+	printProcessPID(pid);
+}
+
+void ps(){
+	printAllProcess();
+}
+
+
+
 uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 	if(systemCallNumber == SYS_CALL_READ){
 		return read(fileDescriptor, buf, nBytes);
@@ -130,5 +165,22 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * b
 	//}/*else if(systemCallNumber == SYS_CALL_PS){
 	//	return ps();
 	//}*/
+	else if(systemCallNumber == SYS_CALL_CREATE_PROCESS){
+		return pcreate(buf);
+
+	}else if(systemCallNumber == SYS_CALL_END_PROCESS){
+		pkill(fileDescriptor);
+
+	}else if(systemCallNumber == SYS_CALL_LS_PROCESS){
+		ls(fileDescriptor);
+	}else if(systemCallNumber == SYS_CALL_CREATE_THREAD){
+		return tcreate(fileDescriptor,buf);
+
+	}else if(systemCallNumber == SYS_CALL_END_THREAD){
+		tkill(fileDescriptor,nBytes);
+
+	}else if(systemCallNumber == SYS_CALL_PS){
+		ps();
+	}
 	return 0;
 }
