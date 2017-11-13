@@ -214,7 +214,7 @@ void b() {
 		}
 	}
 }
-
+/*
 int mutexId = -1;
 void m1() {
 	int h = 0, t = 0;
@@ -276,10 +276,6 @@ void m2() {
 	int h = 0, t = 0;
 	ncPrint("Start process 2");ncNewline();
 
-	/*ncPrint("Start mutex");ncNewline();
-
-	mutexId = createMutex();
-*/
 	while(mutexId == -1) {
 		ncPrint("waiting for mutex");ncNewline();
 		t = 0;
@@ -330,7 +326,7 @@ void m2() {
 	//removeProcess(2);
 	while(1);
 }
-
+*/
 
 void init(){ //change to real init process
 	while(1){

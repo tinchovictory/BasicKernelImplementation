@@ -3,29 +3,12 @@
 #include <keyBoardDriver.h>
 #include <RTL8139.h>
 #include <scheduler.h>
-#include "screenLoader.h"
-#include "naiveConsole.h"
+#include <screenLoader.h>
+#include <malloc.h>
+#include <mutex.h>
 
-#define SYS_CALL_READ 1
-#define SYS_CALL_WRITE 2
-#define SYS_CALL_CLEAR_SCREEN 3
-#define SYS_CALL_MEMORY 4
-#define SYS_CALL_PS 5
-
-#define SYS_CALL_CREATE_PROCESS 7
-#define SYS_CALL_END_PROCESS 8
-#define SYS_CALL_LS_PROCESS 9
-
-#define SYS_CALL_CREATE_THREAD 10
-#define SYS_CALL_END_THREAD 11
-
-#define MEMORY_ASIGN_CODE 0
-#define MEMORY_FREE_CODE 1
-
-#define STANDARD_IO_FD 1
-#define ETHERNET_FD 2
-
-//static void * memory = (void *)0x900000;
+int writeToVideo(void * buf, uint64_t nBytes);
+int writeToMyScreen(void * buf, uint64_t nBytes);
 
 uint64_t clearScreenSys(){
 	clearScreen();
@@ -92,22 +75,17 @@ int writeToVideo(void * buf, uint64_t nBytes) {
 }
 
 int writeToMyScreen(void * buf, uint64_t nBytes) {
-	//ncPrint("About to write in place other than video screen.");ncNewline();
 
 	char * myBuf = (char *) buf;
 	char * myScreen = getCurrentScreen();
 	char * myScreenPos = getCurrentScreenPosition();
 	int i;
 
-	//ncPrintHex(myScreenPos);ncNewline();
-
 	for(i = 0; i < nBytes && myBuf[i] != 0; i++){
 		printCharactersInner(myBuf[i],myScreen,&myScreenPos);
 	}
 
 	setCurrentScreenPosition(myScreenPos);
-
-	//ncPrintHex(myScreenPos);ncPrint(", i:");ncPrintDec(i);ncNewline();
 
 	return i;
 }
@@ -136,63 +114,124 @@ uint64_t pcreate(void * entryPoint){
 
 uint64_t tcreate(uint64_t pid, void * entryPoint){
 	return addThreadToProcess(pid, entryPoint);
-
 }
 
-void pkill(uint64_t pid){
+uint64_t pkill(uint64_t pid){
 	removeProcess(pid);
+	return 1;
 }
 
-void tkill(uint64_t pid, uint64_t pthread){
+uint64_t tkill(uint64_t pid, uint64_t pthread){
 	removeThread(pid, pthread);
+	return 1;
 }
-
-void ls(uint64_t pid){
+/*
+uint64_t ls(uint64_t pid){
 	printProcessPID(pid);
+	return 1;
 }
-
-void ps(){
+*/
+uint64_t ps(){
 	printAllProcess();
-}
-
-uint64_t blockProcessWithPid(uint64_t pid) {
-
 	return 1;
 }
 
-uint64_t yield(uint64_t pid) {
+void * mallocSysCall(uint64_t bytes) {
+	return malloc(bytes);
+}
 
+uint64_t freeSysCall(void * memoryPosition) {
+	free(memoryPosition);
 	return 1;
 }
 
+uint64_t createMutexSysCall() {
+	return createMutex();
+}
 
-uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * buf, uint64_t nBytes){
-	if(systemCallNumber == SYS_CALL_READ){
-		return read(fileDescriptor, buf, nBytes);
-	}else if(systemCallNumber == SYS_CALL_WRITE){
-		return write(fileDescriptor, buf, nBytes);
-	}else if(systemCallNumber == SYS_CALL_CLEAR_SCREEN){
-		return clearScreenSys();
-	} //else if(systemCallNumber == SYS_CALL_MEMORY){
-		//return memoryManagement(fileDescriptor, nBytes);
-	//}/*else if(systemCallNumber == SYS_CALL_PS){
-	//	return ps();
-	//}*/
-	else if(systemCallNumber == SYS_CALL_CREATE_PROCESS){
-		return pcreate(buf);
-	}else if(systemCallNumber == SYS_CALL_END_PROCESS){
-		pkill(fileDescriptor);
+uint64_t endMutexSysCall(uint64_t id) {
+	mutexDestroy(id);
+	return 1;
+}
 
-	}else if(systemCallNumber == SYS_CALL_LS_PROCESS){
-		ls(fileDescriptor);
-	}else if(systemCallNumber == SYS_CALL_CREATE_THREAD){
-		return tcreate(fileDescriptor,buf);
+uint64_t upMutexSysCall(uint64_t id) {
+	mutexUp(id);
+	return 1;
+}
 
-	}else if(systemCallNumber == SYS_CALL_END_THREAD){
-		tkill(fileDescriptor,nBytes);
+uint64_t downMutexSysCall(uint64_t id) {
+	mutexDown(id);
+	return 1;
+}
 
-	}else if(systemCallNumber == SYS_CALL_PS){
-		ps();
+uint64_t getCurrentPidSysCall() {
+	return getCurrentPid();
+}
+
+uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2, uint64_t param3){
+
+	switch(systemCallNumber) {
+		case SYS_CALL_READ:
+			/* param1: filedescriptor, param2: buffer, param3: nBytes */
+			return read(param1, (void *) param2, param3);
+
+		case SYS_CALL_WRITE:
+			/* param1: filedescriptor, param2: buffer, param3: nBytes */
+			return write(param1, (void *) param2, param3);
+
+		case SYS_CALL_CLEAR_SCREEN:
+			/* no params */
+			return clearScreenSys();
+
+		case SYS_CALL_MEMORY_ASSIGN:
+			/* param1: nBytes */
+			return (uint64_t) mallocSysCall(param1);
+
+		case SYS_CALL_MEMORY_FREE:
+			/* param1: memoryPosition */
+			return freeSysCall((void *) param1);
+
+		case SYS_CALL_PS:
+			/*  */
+			return 1;//HAY QUE HACERLO
+
+		case SYS_CALL_CREATE_PROCESS:
+			/* param1: entryPoint */
+			return pcreate((void *) param1);
+
+		case SYS_CALL_END_PROCESS:
+			/* param1: pid */
+			return pkill(param1);
+
+		case SYS_CALL_CREATE_THREAD:
+			/* parm1: pid, param2: entryPoint */
+			return tcreate(param1, (void *) param2);
+
+		case SYS_CALL_END_THREAD:
+			/* param1: pid, param2: pthread */
+			return tkill(param1, param2);
+
+		case SYS_CALL_CREATE_MUTEX:
+			/* no params */
+			return createMutexSysCall();
+
+		case SYS_CALL_END_MUTEX:
+			/* param1: id */
+			return endMutexSysCall(param1);
+
+		case SYS_CALL_UP_MUTEX:
+			/* param1: id */
+			return upMutexSysCall(param1);
+
+		case SYS_CALL_DOWN_MUTEX:
+			/* param1: id */			
+			return downMutexSysCall(param1);
+
+		case SYS_CALL_CURRENT_PID:
+			/* no params */
+			return getCurrentPidSysCall();
 	}
+
+	
 	return 0;
 }

@@ -26,7 +26,7 @@
 
 	void printTab(char ** myCurrentPos);
 
-	char * setScreen(char * myScreen, char * myCurrentPos);
+	void setScreen(char * myScreen, char * myCurrentPos);
 
 	char * backupContent(char * backup);
 

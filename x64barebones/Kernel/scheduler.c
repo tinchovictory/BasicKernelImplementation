@@ -148,7 +148,6 @@ void blockProcess(int pid) {
 	process->state = BLOCKED;
 
 	numberOfTicks = QUANTUM;
-	//while(process->state == BLOCKED);
 }
 
 void unblockProcess(int pid) {
@@ -191,11 +190,6 @@ void printAllProcess() {
 	}while(node->process->pid != currentProcess->process->pid);
 }
 */
-
-int getNumberOfBlockedProcess() {
-	schedulerQueue node = processQueue;
-
-}
 
 /* Threads */
 

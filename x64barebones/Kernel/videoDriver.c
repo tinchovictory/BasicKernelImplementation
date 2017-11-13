@@ -22,7 +22,7 @@ void clear(char * screenToClear) {
 	}
 }
 
-char * setScreen(char * myScreen, char * myCurrentPos) {
+void setScreen(char * myScreen, char * myCurrentPos) {
 	int cursorDistance = (int)(myCurrentPos - myScreen);
 	int i = 0;
 

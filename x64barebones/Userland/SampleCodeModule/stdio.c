@@ -53,8 +53,6 @@ int getchar(){
 	while((read(1,&c,1)==0)){
 		j++;
 	};
-	//printf("Funciono %d veces\n", j);
-	//while(1);
 	return c;
 }
 

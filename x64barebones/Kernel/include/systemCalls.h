@@ -6,13 +6,25 @@
 #define SYS_CALL_READ 1
 #define SYS_CALL_WRITE 2
 #define SYS_CALL_CLEAR_SCREEN 3
-#define SYS_CALL_MEMORY 4
+#define SYS_CALL_MEMORY_ASSIGN 4
+#define SYS_CALL_MEMORY_FREE 5
+#define SYS_CALL_PS 6
+#define SYS_CALL_CREATE_PROCESS 7
+#define SYS_CALL_END_PROCESS 8
+#define SYS_CALL_CREATE_THREAD 9
+#define SYS_CALL_END_THREAD 10
+#define SYS_CALL_CREATE_MUTEX 11
+#define SYS_CALL_END_MUTEX 12
+#define SYS_CALL_UP_MUTEX 13
+#define SYS_CALL_DOWN_MUTEX 14
+#define SYS_CALL_CURRENT_PID 15
 
-#define MEMORY_ASIGN_CODE 0
-#define MEMORY_FREE_CODE 1
+//#define MEMORY_ASIGN_CODE 0
+//#define MEMORY_FREE_CODE 1
 
 #define STANDARD_IO_FD 1
 #define ETHERNET_FD 2
+
 
 uint64_t clearScreenSys();
 
@@ -22,10 +34,30 @@ int blockIfNotOnFocus();
 
 uint64_t write(uint64_t fileDescriptor, void * buf, uint64_t nBytes);
 
-int writeToVideo(void * buf, uint64_t nBytes);
+uint64_t pcreate(void * entryPoint);
 
-int writeToMyScreen(void * buf, uint64_t nBytes);
+uint64_t tcreate(uint64_t pid, void * entryPoint);
 
-uint64_t systemCall(uint64_t systemCallNumber, uint64_t fileDescriptor, void * buf, uint64_t nBytes); // asm function
+uint64_t pkill(uint64_t pid);
+
+uint64_t tkill(uint64_t pid, uint64_t pthread);
+
+uint64_t ps();
+
+void * mallocSysCall(uint64_t bytes);
+
+uint64_t freeSysCall(void * memoryPosition);
+
+uint64_t endMutexSysCall(uint64_t id);
+
+uint64_t upMutexSysCall(uint64_t id);
+
+uint64_t downMutexSysCall(uint64_t id);
+
+uint64_t getCurrentPidSysCall();
+
+
+
+uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2, uint64_t param3); // asm function
 
 #endif

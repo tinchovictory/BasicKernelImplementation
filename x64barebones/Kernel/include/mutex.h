@@ -4,7 +4,7 @@
 	#define MUTEX_LOCKED 1
 	#define MUTEX_UNLOCKED 2
 
-	#define NULL ((void*)0)
+	#define NULL ((void *)0)
 
 	typedef struct blockedProcessNode {
 		int pid;
@@ -24,19 +24,19 @@
 
 	mutexNode * findID(int id);
 
-	void up(int id);
+	void mutexUp(int id);
 
-	void down(int id);
+	void mutexDown(int id);
 
 	void updateStatus(int id, int mutexStatus);
 
-	void destroy(int id);
+	void mutexDestroy(int id);
 
 	mutexNode * destroyMutex(mutexNode * current, int mutexId);
 
 	int isLocked(int id);
 
-	void requestAccess(int id);
+	void mutexRequestAccess(int id);
 
 	void addProcessToMutexList(mutexNode * mutex, int pid);
 

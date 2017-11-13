@@ -61,7 +61,6 @@ void keyBoardHandler(){
 
 			/* Unblock on focus process */
 			unblockProcess(getFocusProcessPid());
-			//ncNewline();ncPrint("unblock");ncNewline();
 
 			if(last - buffer >= BUFFER_SIZE){ //vuelvo al principio del buffer
 				last = buffer;

@@ -25,12 +25,13 @@ mutexNode * addMutex(mutexNode * currentNode, mutexNode * mutex) {
 	return currentNode;
 }
 
-void up(int id) {
+void mutexUp(int id) {
 	updateStatus(id, MUTEX_UNLOCKED);
 	unlockProcesses(id);
 }
 
-void down(int id) {
+void mutexDown(int id) {
+	mutexRequestAccess(id);
 	updateStatus(id, MUTEX_LOCKED);
 }
 
@@ -50,7 +51,7 @@ mutexNode * findID(int id) {
 }
 
 
-void destroy(int id) {
+void mutexDestroy(int id) {
 	list = destroyMutex(list, id);
 }
 
@@ -75,7 +76,7 @@ int isLocked(int id) {
 	return mutex->status == MUTEX_LOCKED;
 }
 
-void requestAccess(int id) {
+void mutexRequestAccess(int id) {
 	mutexNode * mutex = findID(id);
 	while(isLocked(id)) {
 		int currentPid = getCurrentPid();
