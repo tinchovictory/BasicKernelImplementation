@@ -27,8 +27,9 @@ uint64_t clearScreenSys(){
 
 uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 	if(fileDescriptor == STANDARD_IO_FD){
-
-		blockIfNotOnFocus();
+		if (blockIfNotOnFocus()) {
+			return 0;
+		};
 
 		char * myBuf = (char *) buf;
 		int cont = 1, readBytes=0;
@@ -47,15 +48,16 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 	return -1;
 }
 
-void blockIfNotOnFocus(){
+int blockIfNotOnFocus(){
 	if (!isCurrentProcessOnFocus()) {
-		ncNewline();ncPrintDec(getCurrentPid());
-		blockProcess( getCurrentPid() );
+		//ncNewline();ncPrintDec(getCurrentPid());
+		//blockProcess( getCurrentPid() );
+		return 1;
 	}
+	return 0;
 }
 
 uint64_t write(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
-
 	if(fileDescriptor == STANDARD_IO_FD){
 		if (isCurrentProcessOnFocus()) {
 			return writeToVideo(buf,nBytes);
@@ -79,14 +81,26 @@ int writeToVideo(void * buf, uint64_t nBytes) {
 }
 
 int writeToMyScreen(void * buf, uint64_t nBytes) {
+	//ncPrint("About to write in place other than video screen.");ncNewline();
+
 	char * myBuf = (char *) buf;
 	char * myScreen = getCurrentScreen();
 	char * myScreenPos = getCurrentScreenPosition();
 	int i;
 
+	//ncPrint("Before screenWrite Pid:");ncPrintDec(getCurrentPid());ncPrint(",Screen:");ncPrintHex(myScreen);
+	//ncPrint(",Pointer:");ncPrintHex(myScreenPos);ncNewline();
+
 	for(i = 0; i < nBytes && myBuf[i] != 0; i++){
 		printCharactersInner(myBuf[i],myScreen,&myScreenPos);
 	}
+
+	//myScreen = getCurrentScreen();
+	//myScreenPos = getCurrentScreenPosition();
+
+	//ncPrint("After screenWrite Pid:");ncPrintDec(getCurrentPid());ncPrint(",Screen:");ncPrintHex(myScreen);
+	//ncPrint(",Pointer:");ncPrintHex(myScreenPos);ncNewline();
+
 	return i;
 }
 

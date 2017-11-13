@@ -338,32 +338,41 @@ void init(){ //change to real init process
 		while(j<100000000){
 			j++;
 		}
-		ncPrint("P0");
+		//ncPrint("P0");
 	}
 }
 
-
-
-void onFocusTest(){ //change to real init process
-	addProcess(sampleCodeModuleAddress);
-
-	loadScreen(0);
-
-	addProcess(sampleCodeModuleAddress);
-
-	//addProcess(changeOnFocus);
-}
-
-void changeOnFocus(){ //change to real init process
+int focusI = 0;
+void changeOnFocus(){
 	while(1){
 		int j=0;
 		while(j<100000000){
 			j++;
 		}
-		ncPrint("P0");
+		focusI++;
+
+		if (focusI == 10) {
+			focusI = 0;
+		}
+		
+		if (focusI == 0) {
+			loadScreen(0);
+		}
+		if (focusI == 5) {
+			loadScreen(1);
+		}
 	}
 }
 
+void onFocusTest(){ //change to real init process
+	addProcess(sampleCodeModuleAddress);
+		
+	loadScreen(0);
+
+	addProcess(sampleCodeModuleAddress);
+
+	addProcess(changeOnFocus);
+}
 
 int main()
 {	

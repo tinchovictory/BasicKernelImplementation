@@ -26,11 +26,9 @@
 
 	void printTab(char ** myCurrentPos);
 
-	// New functions for Operating Systems project
+	char * setScreen(char * myScreen, char * myCurrentPos);
 
-	char * setScreen(char * data);
-
-	void transferContent(char * backup);
+	char * backupContent(char * backup);
 
 	void clear(char * screenToClear);
 

@@ -21,23 +21,23 @@ void clear(char * screenToClear) {
 	}
 }
 
-char * setScreen(char * data) {
-	char * aux = currentPosition;
+char * setScreen(char * myScreen, char * myCurrentPos) {
+	int cursorDistance = (int)(myCurrentPos - myScreen);
 	int i = 0;
 
 	for(i = 0; i < WINDOW_SIZE; i++){
-		screen[i] = data[i];
+		screen[i] = myScreen[i];
 	}
-	currentPosition = screen;
-
-	return aux;
+	currentPosition = screen + cursorDistance;
 }
 
-void transferContent(char * backup) {
+char * backupContent(char * backup) {
+	int cursorDistance = (int)(currentPosition - screen);
 	int i = 0;
 	for(i = 0 ; i < WINDOW_SIZE ; i++){
 		backup[i] = screen[i];
 	}
+	return backup + cursorDistance; // backup Cursor
 }
 
 void moveScreenUp(char * myScreen, char ** myCurrentPos){

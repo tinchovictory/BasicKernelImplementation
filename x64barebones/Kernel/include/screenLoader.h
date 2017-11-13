@@ -18,6 +18,7 @@
 
 	int isCurrentProcessOnFocus();
 
+	screenNode * getCurrentScreenNode();
 	char * getCurrentScreen();
 	char * getCurrentScreenPosition();
 

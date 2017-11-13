@@ -18,7 +18,7 @@ uint64_t clearScreenSys();
 
 uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes);
 
-void blockIfNotOnFocus();
+int blockIfNotOnFocus();
 
 uint64_t write(uint64_t fileDescriptor, void * buf, uint64_t nBytes);
 
