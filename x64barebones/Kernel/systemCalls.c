@@ -88,18 +88,15 @@ int writeToMyScreen(void * buf, uint64_t nBytes) {
 	char * myScreenPos = getCurrentScreenPosition();
 	int i;
 
-	//ncPrint("Before screenWrite Pid:");ncPrintDec(getCurrentPid());ncPrint(",Screen:");ncPrintHex(myScreen);
-	//ncPrint(",Pointer:");ncPrintHex(myScreenPos);ncNewline();
+	//ncPrintHex(myScreenPos);ncNewline();
 
 	for(i = 0; i < nBytes && myBuf[i] != 0; i++){
 		printCharactersInner(myBuf[i],myScreen,&myScreenPos);
 	}
 
-	//myScreen = getCurrentScreen();
-	//myScreenPos = getCurrentScreenPosition();
+	setCurrentScreenPosition(myScreenPos);
 
-	//ncPrint("After screenWrite Pid:");ncPrintDec(getCurrentPid());ncPrint(",Screen:");ncPrintHex(myScreen);
-	//ncPrint(",Pointer:");ncPrintHex(myScreenPos);ncNewline();
+	//ncPrintHex(myScreenPos);ncPrint(", i:");ncPrintDec(i);ncNewline();
 
 	return i;
 }

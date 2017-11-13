@@ -73,7 +73,6 @@ char * getCurrentScreen() {
 	return node->screen;
 }
 
-
 char * getCurrentScreenPosition() {
 	screenNode * node = getCurrentScreenNode();
 
@@ -82,6 +81,12 @@ char * getCurrentScreenPosition() {
 	}
 
 	return node->currentPosition;
+}
+
+void setCurrentScreenPosition(char * newPosition) {
+	screenNode * node = getCurrentScreenNode();
+
+	node->currentPosition = newPosition;
 }
 
 // When I want to switch on focus screens, I need to save the video

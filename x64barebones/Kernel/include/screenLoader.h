@@ -22,6 +22,8 @@
 	char * getCurrentScreen();
 	char * getCurrentScreenPosition();
 
+	void setCurrentScreenPosition(char * newPosition);
+
 	void saveScreen();
 	
 	screenNode * addScreen(int pid);
