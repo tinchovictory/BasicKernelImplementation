@@ -30,7 +30,7 @@ void runScheduler() {
 		return;
 	}
 
-	//ncPrint("Hola");ncPrintDec(getCurrentPid());ncNewline();
+	ncPrint("Hola");ncPrintDec(getCurrentPid());ncNewline();
 
 	/* Check quantum */
 	if(numberOfTicks < QUANTUM) {
@@ -260,7 +260,7 @@ void removeDeadThreads(processNode * process) {
 }
 
 /* - Debuging - */
-void printProcessStatus() {
+void printProcessState() {
 	int i;
 	schedulerNode * node = processQueue;
 	ncNewline();
@@ -278,4 +278,69 @@ char * getStatus(processState state) {
 		case DEAD: return "DEAD";
 	}
 	return NULL;
+}
+
+void printThreadStatus(threadState state){
+	switch(state){
+		case T_READY:
+			ncprint("READY");
+		case T_RUNNING:
+			ncprint("RUNNING");
+		case T_BLOCKED:
+			ncprint("BLOCKED");
+		default:
+			ncprint("DEAD");
+	}
+}
+
+void printThread(threadNode  * thread){
+	ncprint("Thread id: ");ncPrintDec(thread->pthread);ncNewline();
+	ncprint("Thread status: ");printThreadStatus(thread->state);ncNewline();
+}
+
+void printProcessStatus(processState state){
+	switch(state){
+		case READY:
+			ncprint("READY");
+		case RUNNING:
+			ncprint("RUNNING");
+		case BLOCKED:
+			ncprint("BLOCKED");
+		default:
+			ncprint("DEAD");
+	}
+}
+
+void printProcess(processNode * process){
+	
+	ncPrint("Process pid: "); ncPrintDec(process->pid);ncNewLine();
+	ncPrint("Process status: ");printProcessStatus(process->state);ncNewLine();
+
+	threadLibrary  * lib = process->threadLibrary;
+	while(lib != NULL){
+		ncPrint("   ");printThread(lib->thread);ncNewLine();
+		lib = lib->next;
+	}
+}
+
+void printAllProcess(int mode){
+	if(processQueue == NULL){
+		return;
+	}
+	schedulerQueue queue = processQueue;
+	while(queue->process != NULL){
+		printProcess(queue->process);
+		queue = queue->next;
+	}
+}void printThreadStatus(threadState state){
+	switch(state){
+		case T_READY:
+			ncprint("READY");
+		case T_RUNNING:
+			ncprint("RUNNING");
+		case T_BLOCKED:
+			ncprint("BLOCKED");
+		default:
+			ncprint("DEAD");
+	}
 }
