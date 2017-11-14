@@ -1,7 +1,7 @@
 #ifndef PHILOSOPHERS_H
 #define PHILOSOPHERS_H
 
-#define PHILOSOPHERS_COUNT 5
+#define PHILOSOPHERS_COUNT 3
 
 typedef enum {HUNGRY, THINKING, EATING} State;
 
@@ -20,5 +20,7 @@ int left(int i);
 int right(int i);
 
 void render();
+
+void myTestSleep(int wakeUpCall);
 
 #endif
