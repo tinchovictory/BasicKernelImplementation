@@ -72,6 +72,8 @@
 
 	void unblockThread(int pid, int pthread);
 
+	void unblockAllThreads(int pid);
+
 	int allThreadsAreBlocked(processNode * process);
 
 

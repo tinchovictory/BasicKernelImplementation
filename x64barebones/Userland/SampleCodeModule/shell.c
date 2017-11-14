@@ -2,6 +2,16 @@
 #include <string.h>
 #include <systemCalls.h>
 
+void thread() {
+	while(1) {
+		int j = 0;
+		while(j < 20000000) {
+			j++;
+		}
+		printf("soy el thread\n");
+	}
+}
+
 void test() {
 	while(1) {
 		char c;
@@ -14,6 +24,20 @@ void test() {
 		array[2] = 0;
 		putchar(c);
 		printf("%s\n", array);
+		int pthred = tcreate(getCurrentPid(),thread);
+		int i = 0;
+		while(1) {
+			int j = 0;
+			while(j < 20000000) {
+				j++;
+			}
+			printf("soy el thread 0\n");
+			i++;
+			if(i == 15) {
+				printf("Mato al thread\n");
+				tkill(getCurrentPid(), pthred);
+			}
+		}
 	}
 }
 

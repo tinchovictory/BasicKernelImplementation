@@ -76,9 +76,7 @@ void keyBoardHandler(){
 			*(last++) = character;
 
 			/* Unblock on focus thread */
-			//unblockProcess(getFocusProcessPid());
-			int pid = getFocusProcessPid();
-			unblockThread(pid, getCurrentThreadOfProcess(pid));//VA A FALLAR
+			unblockAllThreads(getFocusProcessPid());
 
 			if(last - buffer >= BUFFER_SIZE){ //vuelvo al principio del buffer
 				last = buffer;

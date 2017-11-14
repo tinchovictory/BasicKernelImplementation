@@ -179,6 +179,21 @@ void unblockThread(int pid, int pthread) {
 	unblockProcess(pid);
 }
 
+void unblockAllThreads(int pid) {
+	processNode * process = getProcessWithPid(pid);
+	threadLibrary * threadLib = process->threadLibrary;
+	int threadsCount = 0;
+	while(threadsCount < process->threadSize) {
+		if(threadLib->thread->state == T_BLOCKED) {
+			threadLib->thread->state = T_READY;
+			//ncPrint("-unblock-");
+			unblockProcess(pid);
+		}
+		threadLib = threadLib->next;
+		threadsCount++;
+	}
+}
+
 
 void yieldSwitch() {
 	if(currentProcess == NULL) {
