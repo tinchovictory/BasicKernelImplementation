@@ -29,7 +29,7 @@
 	/** Functions for loading a new process **/
 
 	/* Add process p to process queue */
-	void addProcessToQueue(processPointer p);
+	void addProcessToQueue(processNode * p);
 
 	/* Create process with entryPoint */
 	int addProcess(void * entryPoint);

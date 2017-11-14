@@ -39,7 +39,7 @@ void freeProcess(processNode * process) {
 
 void printProcessInfo(processNode * process) {
 
-	print("Pid: ");print(process->pid);print(", status: ");print(getStatus(process->state));newLineVid();
+	print("Pid: ");printDec(process->pid);print(", status: ");print(getStatus(process->state));newLineVid();
 }
 
 char * getStatus(processState state) {

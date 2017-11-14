@@ -1,9 +1,8 @@
 #include "myStdLib.h"
 
-int intLength(int number);
-
-void  itoa ( int value, char * str) {
+int itoa ( int value, char * str) {
 	int length = intLength(value);
+	int aux = length;
 
 	if (length == 0) {
 		str[0] = '0';
@@ -12,10 +11,12 @@ void  itoa ( int value, char * str) {
 
 	str[length] = 0;
 
-	while (length) {
-		str[length-1] = (number % 10) + '0';
-		number /= 10;
+	while (aux) {
+		str[aux-1] = (value % 10) + '0';
+		value /= 10;
+		aux--;
 	}
+	return length;
 };
 
 int intLength(int number) {

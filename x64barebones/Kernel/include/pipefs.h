@@ -7,7 +7,7 @@
 	#define PIPE_BUF_SIZE 4096
 
 	typedef struct pipeNode {
-		char * name[NAME_SIZE];
+		char * name;
 
 		char * buffer;
 		char * readPointer;

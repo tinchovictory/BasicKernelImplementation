@@ -58,18 +58,18 @@ void runScheduler() {
 }
 
 void * switchKernelToUser () {
-	processPointer process = currentProcess->process;
+	processNode * process = currentProcess->process;
 	return process->currentThread->thread->userStack;
 }
 
 int addProcess(void * entryPoint) {
-	processPointer process = createProcess();
+	processNode * process = createProcess();
 	addProcessToQueue(process);
 	addThreadToProcess(process->pid, entryPoint);
 	return process->pid;
 }
 
-void addProcessToQueue(processPointer p) {
+void addProcessToQueue(processNode * p) {
 	schedulerNode * node = (schedulerNode *) allocate(PAGE_SIZE);
 
 	node->process = p;

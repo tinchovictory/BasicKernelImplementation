@@ -2,6 +2,8 @@
 #define __MY_STD_LIB__
 
 // Our itoa uses decimal base by default.
-char *  itoa ( int value, char * str);
+int itoa ( int value, char * str);
+
+int intLength(int number);
 
 #endif

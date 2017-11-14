@@ -34,7 +34,7 @@
 
 	/* Creates a process in memory from the process entry point */
 	processNode * createProcess();
-	void createProcessName(processNode * process, char * name)
+	void createProcessName(processNode * process, char * name);
 
 	/* Free Process structure */
 	void freeProcess(processNode * process);

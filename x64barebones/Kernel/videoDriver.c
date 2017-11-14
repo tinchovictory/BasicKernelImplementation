@@ -1,5 +1,6 @@
 #include "videoDriver.h"
 #include <stdint.h>
+#include <myStdLib.h>
 
 static char * screen = (char *)0xB8000;
 static char * currentPosition = (char*)0xB8000;
@@ -85,7 +86,7 @@ void printDec(int number){
 }
 
 void newLineVid() {
-	newLine(screen,currentPosition);
+	newLine(screen,&currentPosition);
 };
 
 void newLine(char * myScreen, char ** myCurrentPos){
