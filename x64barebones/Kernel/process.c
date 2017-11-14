@@ -46,7 +46,7 @@ char * getStatus(processState state) {
 	switch(state) {
 		case READY: return "READY";
 		case RUNNING: return "RUNNING";
-		case BLOCKED: return "BLOCKED";
+		case BLOCKED_IO:case BLOCKED_MUTEX:case BLOCKED_PIPE: return "BLOCKED";
 		case DEAD: return "DEAD";
 	}
 	return NULL;

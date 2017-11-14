@@ -56,7 +56,7 @@ void writeToPipe(char name[NAME_SIZE], char * buff) {
 		*(pipe->writePointer++) = *(buff++);
 
 		//Unblock
-		unblockProcess(pid);
+		unblockProcess(pid, BLOCKED_IO);
 
 		pipe->writePointer = pointerPosition(pipe->writePointer,pipe->buffer);
 	}
@@ -71,7 +71,7 @@ void readFromPipe(char name[NAME_SIZE], char * buff) {
 	if(*(pipe->readPointer) == 0) {
 		int pid = getReceiverPid(name);
 		//Block
-		blockProcess(pid);
+		blockProcess(pid, BLOCKED_IO);
 	}
 
 	do {

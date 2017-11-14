@@ -20,9 +20,10 @@
 #define SYS_CALL_DOWN_MUTEX 14
 #define SYS_CALL_CURRENT_PID 15
 #define SYS_CALL_CREATE_PROCESS_BACKGROUND 16
-
-//#define MEMORY_ASIGN_CODE 0
-//#define MEMORY_FREE_CODE 1
+#define SYS_CALL_CREATE_SEMAPHORE 17
+#define SYS_CALL_END_SEMAPHORE 18
+#define SYS_CALL_UP_SEMAPHORE 19
+#define SYS_CALL_DOWN_SEMAPHORE 20
 
 #define STANDARD_IO_FD 1
 #define ETHERNET_FD 2
@@ -39,8 +40,6 @@ int write(int fildes, void *buf, unsigned int nbytes);
 
 
 void clearScreen();
-
-//void *memoryManagement(int memoryCode, unsigned int nbytes);
 
 void * malloc(int bytes);
 
@@ -69,5 +68,13 @@ void mutexUp(int id);
 void mutexDown(int id);
 
 int getCurrentPid();
+
+int createSemaphore(int start);
+
+void endSemaphore(int id);
+
+void semaphoreUp(int id);
+
+void semaphoreDown(int id);
 
 #endif

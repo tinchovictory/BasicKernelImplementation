@@ -7,7 +7,7 @@
 
 	#define NUMBER_OF_PAGES 256
 
-	typedef enum {T_READY, T_RUNNING, T_BLOCKED, T_DEAD} threadState;
+	typedef enum {T_READY, T_RUNNING, T_BLOCKED_IO, T_BLOCKED_MUTEX, T_BLOCKED_PIPE, T_DEAD} threadState;
 
 	typedef struct thread {
 		void * userStack;

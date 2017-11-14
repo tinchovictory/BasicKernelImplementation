@@ -6,6 +6,7 @@
 #include <screenLoader.h>
 #include <malloc.h>
 #include <mutex.h>
+#include <semaphores.h>
 
 int writeToVideo(void * buf, uint64_t nBytes);
 int writeToMyScreen(void * buf, uint64_t nBytes);
@@ -33,8 +34,7 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 		}
 		
 		if(readBytes == 0) {
-			//blockProcess(getCurrentPid());
-			blockThread(getCurrentPid(),getCurrentPthread());
+			blockThread(getCurrentPid(),getCurrentPthread(), T_BLOCKED_IO);
 		}
 		return readBytes;
 	}else if(fileDescriptor == ETHERNET_FD){
@@ -45,8 +45,7 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 
 int blockIfNotOnFocus(){
 	if (!isCurrentProcessOnFocus()) {
-		//blockProcess(getCurrentPid());
-		blockThread(getCurrentPid(),getCurrentPthread());
+		blockThread(getCurrentPid(),getCurrentPthread(), T_BLOCKED_IO);
 		return 1;
 	}
 	return 0;
@@ -92,24 +91,6 @@ int writeToMyScreen(void * buf, uint64_t nBytes) {
 	return i;
 }
 
-/*
-uint64_t memoryManagement(uint64_t fnCode, uint64_t nBytes){
-	if(fnCode == MEMORY_ASIGN_CODE){//asigno memoria
-		void * ptr = memory;
-		memory += nBytes;
-		return (uint64_t) ptr;
-	}else if(fnCode == MEMORY_FREE_CODE){//libero memoria
-		return 0;
-	}
-	return -1;
-}
-
-uint64_t ps() {
-	PrintAllProcess();
-	return 1;
-}*/
-
-
 uint64_t pcreate(void * entryPoint){
 	int pid = addProcess(entryPoint);
 	loadScreen(pid);
@@ -134,14 +115,9 @@ uint64_t tkill(uint64_t pid, uint64_t pthread){
 	removeThread(pid, pthread);
 	return 1;
 }
-/*
-uint64_t ls(uint64_t pid){
-	printProcessPID(pid);
-	return 1;
-}
-*/
+
 uint64_t ps(){
-	printAllProcess();
+	//printAllProcess();
 	return 1;
 }
 
@@ -176,6 +152,27 @@ uint64_t downMutexSysCall(uint64_t id) {
 uint64_t getCurrentPidSysCall() {
 	return getCurrentPid();
 }
+
+uint64_t createSemaphoreSysCall(uint64_t start) {
+	return createSemaphore(start);
+}
+
+uint64_t endSemaphoreSysCall(uint64_t id) {
+	semaphoreDestroy(id);
+	return 1;
+}
+
+uint64_t upSemaphoreSysCall(uint64_t id) {
+	semaphoreUp(id);
+	return 1;
+}
+
+uint64_t downSemaphoreSysCall(uint64_t id) {
+	semaphoreDown(id);
+	return 1;
+}
+
+
 
 uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2, uint64_t param3){
 
@@ -244,6 +241,22 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2,
 		case SYS_CALL_CURRENT_PID:
 			/* no params */
 			return getCurrentPidSysCall();
+
+		case SYS_CALL_CREATE_SEMAPHORE:
+			/* param1: start */
+			return createSemaphoreSysCall(param1);
+
+		case SYS_CALL_END_SEMAPHORE:
+			/* param1: id */
+			return endSemaphoreSysCall(param1);
+
+		case SYS_CALL_UP_SEMAPHORE:
+			/* param1: id */
+			return upSemaphoreSysCall(param1);
+
+		case SYS_CALL_DOWN_SEMAPHORE:
+			/* param1: id */			
+			return downSemaphoreSysCall(param1);
 	}
 
 	

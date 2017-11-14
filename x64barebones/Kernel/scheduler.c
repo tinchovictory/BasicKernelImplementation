@@ -137,55 +137,55 @@ void removeDeadProcess() {
 	}
 }
 
-void blockProcess(int pid) {
+void blockProcess(int pid, processState blockType) {
 	processNode * process = getProcessWithPid(pid);
-	process->state = BLOCKED;
+	process->state = blockType;
 
 	numberOfTicks = QUANTUM;
 }
 
-void unblockProcess(int pid) {
+void unblockProcess(int pid, processState blockType) {
 	processNode * process = getProcessWithPid(pid);
 	//Check for dead process
-	if(process->state == BLOCKED) {
+	if(process->state == blockType) {
 		process->state = READY;
 	}
 }
 
-void blockThread(int pid, int pthread) {
+void blockThread(int pid, int pthread, threadState blockType) {
 	processNode * process = getProcessWithPid(pid);
 	threadNode * thread = getThreadWithPthread(pthread, process);
 
-	thread->state = T_BLOCKED;
+	thread->state = blockType;
 	process->threadTick = THREAD_QUANTUM;
 
 	/* Check if all thread of the process are blocked */
 	if(allThreadsAreBlocked(process)) {
-		blockProcess(pid);
+		blockProcess(pid,getBlockProcessType(blockType));
 	}
 
 }
 
-void unblockThread(int pid, int pthread) {
+void unblockThread(int pid, int pthread, threadState blockType) {
 	processNode * process = getProcessWithPid(pid);
 	threadNode * thread = getThreadWithPthread(pthread, process);
 
-	if(thread->state == T_BLOCKED) {
+	if(thread->state == blockType) {
 		thread->state = T_READY;
 	}
 
-	unblockProcess(pid);
+	unblockProcess(pid, getBlockProcessType(blockType));
 }
 
-void unblockAllThreads(int pid) {
+void unblockAllThreads(int pid, threadState blockType) {
 	processNode * process = getProcessWithPid(pid);
 	threadLibrary * threadLib = process->threadLibrary;
 	int threadsCount = 0;
 	while(threadsCount < process->threadSize) {
-		if(threadLib->thread->state == T_BLOCKED) {
+		if(threadLib->thread->state == blockType) {
 			threadLib->thread->state = T_READY;
 			//ncPrint("-unblock-");
-			unblockProcess(pid);
+			unblockProcess(pid, getBlockProcessType(blockType));
 		}
 		threadLib = threadLib->next;
 		threadsCount++;
@@ -197,10 +197,10 @@ void yieldSwitch() {
 	if(currentProcess == NULL) {
 		return;
 	}
-	if(currentProcess->process->state == BLOCKED) {
+	if(isProcessBlocked(currentProcess->process->state)) {
 		numberOfTicks = QUANTUM;
 		runScheduler();
-	} else if(currentProcess->process->currentThread->thread->state == T_BLOCKED) {
+	} else if(isThreadBlocked(currentProcess->process->currentThread->thread->state)) {
 		currentProcess->process->threadTick = THREAD_QUANTUM;
 		runScheduler();
 	}
@@ -214,24 +214,37 @@ int getCurrentPthread() {
 	return currentProcess->process->currentThread->thread->pthread;
 }
 
-/*
-void printAllProcess() {
-	schedulerNode * node = processQueue;
-	while(node != NULL && node->process->pid == 0)
-		node = node->next;
-	
-	if(queueSize < 1){
-		return;
+processState getBlockProcessType(threadState state) {
+	switch(state) {
+		case T_BLOCKED_IO:
+			return BLOCKED_IO;
+		case T_BLOCKED_MUTEX:
+			return BLOCKED_MUTEX;
+		case T_BLOCKED_PIPE:
+			return BLOCKED_PIPE;
+		case T_READY:
+			return READY;
+		case T_RUNNING:
+			return RUNNING;
+		case T_DEAD:
+			return DEAD;
 	}
-	do{
-		if(node->process->pid){
-			print("Name: "); print(node->process->name); printTab(); print("PID: "); print(strnum(node->process->pid,char str[BUFFER_SIZE],10)); printTab();
-			print("State: "); print(getStatus(node->process->state)); printTab(); print("Threads: "); print(strnum(node->process->threadSize,char str1[BUFFER_SIZE],10)); newLine();
-		}
-		node = node->next;
-	}while(node->process->pid != currentProcess->process->pid);
+	return -1;
 }
-*/
+
+int isProcessBlocked(processState state) {
+	if(state == BLOCKED_IO || state == BLOCKED_PIPE || state == BLOCKED_MUTEX) {
+		return 1;
+	}
+	return 0;
+}
+
+int isThreadBlocked(threadState state) {
+	if(state == T_BLOCKED_IO || state == T_BLOCKED_PIPE || state == T_BLOCKED_MUTEX) {
+		return 1;
+	}
+	return 0;
+}
 
 /* Threads */
 
@@ -252,7 +265,6 @@ void nextThread() {
 	if(currentProcess->process->currentThread->thread->state == T_RUNNING) {
 		currentProcess->process->currentThread->thread->state = T_READY;
 	}
-	//currentProcess->process->currentThread->thread->state = T_READY;
 	
 	while(currentProcess->process->currentThread->next->thread->state != T_READY) {
 		currentProcess->process->currentThread = currentProcess->process->currentThread->next;
@@ -335,7 +347,7 @@ int allThreadsAreBlocked(processNode * process) {
 }
 
 /* - Debuging - */
-void printProcessState() {
+/*void printProcessState() {
 	int i;
 	schedulerNode * node = processQueue;
 	ncNewline();
@@ -409,3 +421,4 @@ void printAllProcess(int mode){
 		queue = queue->next;
 	}
 }
+*/
