@@ -2,7 +2,7 @@
 //#include <string.h>
 #include <systemCalls.h>
 #include "philosophers.h"
-
+/*
 void myTestSleep(int wakeUpCall);
 
 int auxCounter = 0;
@@ -117,4 +117,4 @@ void myTestSleep(int wakeUpCall) {
 	while(i < wakeUpCall){
 		i++;
 	}
-}
+}*/
