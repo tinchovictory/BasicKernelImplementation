@@ -361,7 +361,9 @@ void changeOnFocus(){
 }
 
 void onFocusTest(){ //change to real init process
-	addProcess(sampleCodeModuleAddress);
+	char * name = (char *) allocate(sizeof(char) * 6);
+	name[0] = 's';name[1] = 'h';name[2] = 'e';name[3] = 'l';name[4] = 'l';name[5] = 0;
+	addProcess(sampleCodeModuleAddress, name);
 		
 	loadScreen(1);
 
@@ -388,10 +390,11 @@ int main()
 	ncClear();
 
 	//((EntryPoint)sampleCodeModuleAddress)();
-
 	/* Add init process */
-	addProcess(init);
-
+	char * name = (char *) allocate(sizeof(char) * 5);
+	name[0] = 'i';name[1] = 'n';name[2] = 'i';name[3] = 't';name[4] = 0;
+	addProcess(init, name);
+	
 	onFocusTest();
 
 	//addProcess(m1);

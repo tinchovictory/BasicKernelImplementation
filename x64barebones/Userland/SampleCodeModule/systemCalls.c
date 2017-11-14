@@ -32,12 +32,12 @@ void ps(){
 	systemCall(SYS_CALL_PS, 1, 0, 0);
 }
 
-int pcreate(void * entryPoint) {
-	return systemCall(SYS_CALL_CREATE_PROCESS, (uint64_t) entryPoint, 0, 0);
+int pcreate(void * entryPoint, char * name) {
+	return systemCall(SYS_CALL_CREATE_PROCESS, (uint64_t) entryPoint, (uint64_t) name, 0);
 }
 
-int pcreateBackground(void * entryPoint) {
-	return systemCall(SYS_CALL_CREATE_PROCESS_BACKGROUND, (uint64_t) entryPoint, 0, 0);
+int pcreateBackground(void * entryPoint, char * name) {
+	return systemCall(SYS_CALL_CREATE_PROCESS_BACKGROUND, (uint64_t) entryPoint, (uint64_t) name, 0);
 }
 
 void exit() {

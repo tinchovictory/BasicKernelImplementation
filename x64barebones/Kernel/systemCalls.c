@@ -4,9 +4,9 @@
 #include <RTL8139.h>
 #include <scheduler.h>
 #include <screenLoader.h>
-#include <malloc.h>
 #include <mutex.h>
 #include <semaphores.h>
+#include <process.h>
 
 int writeToVideo(void * buf, uint64_t nBytes);
 int writeToMyScreen(void * buf, uint64_t nBytes);
@@ -91,14 +91,14 @@ int writeToMyScreen(void * buf, uint64_t nBytes) {
 	return i;
 }
 
-uint64_t pcreate(void * entryPoint){
-	int pid = addProcess(entryPoint);
+uint64_t pcreate(void * entryPoint, char * name) {
+	int pid = addProcess(entryPoint, name);
 	loadScreen(pid);
 	return pid;
 }
 
-uint64_t pcreateBackground(void * entryPoint) {
-	return addProcess(entryPoint);
+uint64_t pcreateBackground(void * entryPoint, char * name) {
+	return addProcess(entryPoint, name);
 }
 
 uint64_t tcreate(uint64_t pid, void * entryPoint){
@@ -117,16 +117,16 @@ uint64_t tkill(uint64_t pid, uint64_t pthread){
 }
 
 uint64_t ps(){
-	//printAllProcess();
+	printAllProcess();
 	return 1;
 }
 
 void * mallocSysCall(uint64_t bytes) {
-	return malloc(bytes);
+	return pmalloc(bytes);
 }
 
 uint64_t freeSysCall(void * memoryPosition) {
-	free(memoryPosition);
+	pfree(memoryPosition);
 	return 1;
 }
 
@@ -198,17 +198,17 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2,
 			return freeSysCall((void *) param1);
 
 		case SYS_CALL_PS:
-			/*  */
+			/* no params */
+			ps();
 			return 1;//HAY QUE HACERLO
 
 		case SYS_CALL_CREATE_PROCESS:
-			/* param1: entryPoint */
-			return pcreate((void *) param1);
+			/* param1: entryPoint, param2: name */
+			return pcreate((void *) param1, (char *) param2);
 
 		case SYS_CALL_CREATE_PROCESS_BACKGROUND:
-			/* param1: entryPoint */
-			return pcreateBackground((void *) param1);
-
+			/* param1: entryPoint, param2: name */
+			return pcreateBackground((void *) param1, (char *) param2);
 
 		case SYS_CALL_END_PROCESS:
 			/* param1: pid */

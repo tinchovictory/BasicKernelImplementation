@@ -32,7 +32,7 @@
 	void addProcessToQueue(processNode * p);
 
 	/* Create process with entryPoint */
-	int addProcess(void * entryPoint);
+	int addProcess(void * entryPoint, char * name);
 
 	/* Return the entry point of the process set as current */
 	void * currentProcessEntryPoint();
@@ -85,6 +85,8 @@
 	void yieldSwitch();
 
 	void printAllProcess();
+
+	void printPsHeader();
 
 	processState getBlockProcessType(threadState state);
 

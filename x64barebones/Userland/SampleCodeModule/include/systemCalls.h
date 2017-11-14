@@ -47,9 +47,9 @@ void free(void * memPosition);
 
 void ps();
 
-int pcreate(void * entryPoint);
+int pcreate(void * entryPoint, char * name);
 
-int pcreateBackground(void * entryPoint);
+int pcreateBackground(void * entryPoint, char * name);
 
 void exit();
 

@@ -102,8 +102,12 @@ void backSpace(char * myScreen, char ** myCurrentPos){
 	*(*myCurrentPos) = ' ';
 }
 
-void printTab(char ** myCurrentPos){
+void myPrintTab(char ** myCurrentPos) {
 	*myCurrentPos += 8; 
+}
+
+void printTab() {
+	myPrintTab(&currentPosition);
 }
 
 void printCharacters(const char character){
