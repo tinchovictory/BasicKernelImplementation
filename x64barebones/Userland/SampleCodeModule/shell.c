@@ -12,6 +12,17 @@ void thread() {
 	}
 }
 
+void philosophers {
+	printf("Hola\n");
+	
+	int j = 0;
+	while(j<100000000) {
+		j++;
+	}
+
+	exit();
+}
+
 void test() {
 	while(1) {
 		char c;
@@ -116,7 +127,7 @@ void processComand(char * buffer){
 	}else if(!strcmp("ps",buffer)){
 		ps();
 	}else if(startsWith("philosophers",buffer)){
-		//TODO
+		run(philosophers);
 	}else if(startsWith("prodcons",buffer)){
 		//TODO
 	}else if(!strcmp(buffer,"test")) {
