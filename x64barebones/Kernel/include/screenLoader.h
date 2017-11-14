@@ -29,7 +29,6 @@
 
 	void saveScreen();
 	
-	//screenNode * addScreen(int pid);
 	screenNode * addScreen(screenNode * current, screenNode * prev, int pid);
 	screenNode * newScreenNode();
 
@@ -37,7 +36,7 @@
 	screenNode * findScreenNodeByPid(int pid);
 
 	void removeScreen(int pid);
-	screenNode * removeScreenInner(screenNode * currentNode, int pid);
+	screenNode * removeScreenInner(screenNode * currentNode, screenNode * prev, int pid);
 
 	void loadPreviousScreen();
 	void loadNextScreen();

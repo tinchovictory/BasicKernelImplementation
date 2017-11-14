@@ -20,7 +20,9 @@ int loadScreen(int pid) {
 	// If the pid has no screen data assigned, I create one.
 	if (node == NULL) {
 		//node = addScreen(pid);
-		node = addScreen(list, NULL, pid);
+		//ncPrint("loadScreen");
+		list = addScreen(list, NULL, pid);
+		node = findScreenNodeByPid(pid);
 
 		if (node == NULL) {
 			return 0;
@@ -117,20 +119,6 @@ void saveScreen() {
 }
 
 // After creating a new screen, I insert it to my list.
-/*screenNode * addScreen(int pid) {
-	screenNode * node = newScreenNode();
-
-	if (node == NULL) {
-		return NULL;
-	}
-
-	node->pid = pid;
-	node->next = list;
-	list = node;
-
-	return node;
-}*/
-
 screenNode * addScreen(screenNode * current, screenNode * prev, int pid) {
 	if(current == NULL) {
 		screenNode * node = newScreenNode();
@@ -140,9 +128,11 @@ screenNode * addScreen(screenNode * current, screenNode * prev, int pid) {
 		node->pid = pid;
 		node->next = NULL;
 		node->prev = prev;
+		//ncPrintDec(pid);if(pid == 2)while(1);
 
 		return node;
 	}
+	//ncPrint("pase");if(pid == 2)while(1);
 	current->next = addScreen(current->next, current, pid);
 	return current;
 }
@@ -194,21 +184,25 @@ void removeScreen(int pid) {
 	if (pid == onFocusPid) {
 		onFocusPid = NO_FOCUS;
 	}
-	removeScreenInner(list,pid);
+	list = removeScreenInner(list, NULL, pid);
 }
 
-screenNode * removeScreenInner(screenNode * currentNode, int pid) {
+screenNode * removeScreenInner(screenNode * currentNode, screenNode * prev, int pid) {
 	if (currentNode == NULL) {
 		return NULL;
 	}
 	if(currentNode->pid == pid) {
-		screenNode * aux = currentNode->next;
+		screenNode * next = currentNode->next;
+		if(next != NULL) {
+			next->prev = prev;
+		}
+
 		deallocate(currentNode->screen, WINDOW_SIZE*sizeof(char *));
 		deallocate(currentNode, sizeof(screenNode));
 
-		return aux;
+		return next;
 	}
-	currentNode->next = removeScreenInner(currentNode->next, pid);
+	currentNode->next = removeScreenInner(currentNode->next, currentNode, pid);
 	return currentNode;
 }
 
@@ -216,14 +210,12 @@ screenNode * removeScreenInner(screenNode * currentNode, int pid) {
 /* Switchable screens */
 
 void loadNextScreen() {
-	ncPrint("aca");
 	if(onFocusPid == NO_FOCUS) {
 		return;
 	}
-	screenNode * currentScreen = getCurrentScreenNode();
+	screenNode * currentScreen = findScreenNodeByPid(onFocusPid);
 	int nextPid;
 	if(currentScreen->next != NULL) {
-		ncPrint(" y entre");
 		nextPid = currentScreen->next->pid;
 		loadScreen(nextPid);
 	}
@@ -233,7 +225,7 @@ void loadPreviousScreen() {
 	if(onFocusPid == NO_FOCUS) {
 		return;
 	}
-	screenNode * currentScreen = getCurrentScreenNode();
+	screenNode * currentScreen = findScreenNodeByPid(onFocusPid);
 	int prevPid;
 	if(currentScreen->prev != NULL) {
 		prevPid = currentScreen->prev->pid;
