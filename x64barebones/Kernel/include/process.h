@@ -16,6 +16,11 @@
 		in processSwitch function inside schedulerSwitch.asm
 	*/
 
+	typedef struct heapNode {
+		void * address;
+		int size;
+		struct heapNode * next;
+	} heapNode;
 	
 	typedef struct process {
 		int ppid;
@@ -30,6 +35,8 @@
 		int threadTick;
 
 		int currentPThread;
+
+		heapNode * heap;
 	} processNode;
 
 	/* Creates a process in memory from the process entry point */
@@ -46,5 +53,15 @@
 
 	/* Create a stack frame for proces initialization */
 	void * fillStackFrame(void * entryPoint, void * baseStack);
+
+	void * pmalloc(int nBytes);
+
+	void pfree(void * mem);
+
+	heapNode * pfreeR(heapNode * node, void * mem);
+
+	heapNode * addHeap(heapNode * node, void * mem, int nBytes);
+
+	void freeHeap(heapNode * node);
 
 #endif

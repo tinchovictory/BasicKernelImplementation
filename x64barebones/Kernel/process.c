@@ -4,6 +4,7 @@
 #include <stackFrame.h>
 #include <threads.h>
 #include <videoDriver.h>
+#include <scheduler.h>
 
 /* Number of process created */
 static int currentPid = 0;
@@ -17,6 +18,8 @@ processNode * createProcess(char * name, int ppid) {
 	process->threadSize = 0;
 	process->state = READY;
 	createProcessName(process,name);
+
+	process->heap = NULL;
 
 	return process;
 }
@@ -35,6 +38,8 @@ void createProcessName(processNode * process, char * name) {
 void freeProcess(processNode * process) {
 	/* Free threads library */
 	freeThreadLibrary(process->threadLibrary, process->threadSize);
+
+	freeHeap(process->heap);
 	/* Free process pointer */
 	deallocate(process, PAGE_SIZE);
 }
@@ -53,3 +58,54 @@ char * getStatus(processState state) {
 	}
 	return NULL;
 }
+
+
+void * pmalloc(int nBytes) {
+	void * mem = allocate(nBytes);
+	processNode * current = getProcessWithPid(getCurrentPid());
+	current->heap = addHeap(current->heap, mem, nBytes);
+	return mem;
+}
+
+heapNode * addHeap(heapNode * node, void * mem, int nBytes) {
+	if(node == NULL) {
+		heapNode * newNode = (heapNode *) allocate(sizeof(heapNode));
+		newNode->address = mem;
+		newNode->size = nBytes;
+		return newNode;
+	}
+	node->next = addHeap(node->next, mem, nBytes);
+	return node;
+}
+
+
+void pfree(void * mem) {
+	processNode * current = getProcessWithPid(getCurrentPid());
+	current->heap = pfreeR(current->heap, mem);
+}
+
+heapNode * pfreeR(heapNode * node, void * mem) {
+	if(node == NULL) {
+		return NULL;
+	}
+	if(node->address == mem) {
+		heapNode * next = node->next;
+		deallocate(node->address, node->size);
+		deallocate(node, sizeof(heapNode));
+		return next;
+	}
+	node->next = pfreeR(node->next, mem);
+	return node;
+}
+
+void freeHeap(heapNode * node) {
+	if(node == NULL) {
+		return;
+	}
+	heapNode * next = node->next;
+	deallocate(node->address, node->size);
+	deallocate(node, sizeof(heapNode));
+	freeHeap(next);
+}
+
+

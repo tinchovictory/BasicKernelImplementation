@@ -4,9 +4,9 @@
 #include <RTL8139.h>
 #include <scheduler.h>
 #include <screenLoader.h>
-#include <malloc.h>
 #include <mutex.h>
 #include <semaphores.h>
+#include <process.h>
 
 int writeToVideo(void * buf, uint64_t nBytes);
 int writeToMyScreen(void * buf, uint64_t nBytes);
@@ -122,11 +122,11 @@ uint64_t ps(){
 }
 
 void * mallocSysCall(uint64_t bytes) {
-	return malloc(bytes);
+	return pmalloc(bytes);
 }
 
 uint64_t freeSysCall(void * memoryPosition) {
-	free(memoryPosition);
+	pfree(memoryPosition);
 	return 1;
 }
 
