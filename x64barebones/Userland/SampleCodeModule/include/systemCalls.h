@@ -52,6 +52,8 @@ int pcreate(void * entryPoint);
 
 int pcreateBackground(void * entryPoint);
 
+void exit();
+
 void pkill(int pid);
 
 int tcreate(int pid, void * entryPoint);

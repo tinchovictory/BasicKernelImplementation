@@ -40,6 +40,9 @@ int pcreateBackground(void * entryPoint) {
 	return systemCall(SYS_CALL_CREATE_PROCESS_BACKGROUND, (uint64_t) entryPoint, 0, 0);
 }
 
+void exit() {
+	pkill(getCurrentPid());
+}
 
 void pkill(int pid) {
 	systemCall(SYS_CALL_END_PROCESS, pid, 0, 0);
