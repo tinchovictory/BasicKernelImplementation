@@ -34,6 +34,13 @@
 	/* Creates a process in memory from the process entry point */
 	processPointer createProcess();
 
+	/* Free Process structure */
+	void freeProcess(processNode * process);
+
+	/* Print process state */
+	void printProcesInfo(processNode * process);
+	char * getStatus(processState state);
+
 	/* Create a stack frame for proces initialization */
 	void * fillStackFrame(void * entryPoint, void * baseStack);
 

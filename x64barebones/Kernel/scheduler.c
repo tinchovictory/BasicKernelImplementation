@@ -129,14 +129,10 @@ void removeDeadProcess() {
 
 			/* Remove process */
 			prev->next = current->next;
-			/* Free threads library */
-			freeThreadLibrary(current->process->threadLibrary, current->process->threadSize);
-			/* Free process */
-			deallocate(current->process, PAGE_SIZE);
+
+			freeProcess(current->process);
 			/* Free process slot */
 			deallocate(current, PAGE_SIZE);
-
-
 		}
 		prev = current;
 		current = current->next;
@@ -325,19 +321,9 @@ void printProcessState() {
 	schedulerNode * node = processQueue;
 	ncNewline();
 	for(i = 0; i < queueSize; i++) {
-		ncPrint("Pid: ");ncPrintDec(node->process->pid);ncPrint(" status: ");ncPrint(getStatus(node->process->state));ncNewline();
+		printProcessState(node->process);
 		node = node->next;
 	}
-}
-
-char * getStatus(processState state) {
-	switch(state) {
-		case READY: return "READY";
-		case RUNNING: return "RUNNING";
-		case BLOCKED: return "BLOCKED";
-		case DEAD: return "DEAD";
-	}
-	return NULL;
 }
 
 void printThreadStatus(threadState state){
