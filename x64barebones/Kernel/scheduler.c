@@ -31,8 +31,6 @@ void runScheduler() {
 		return;
 	}
 
-	//ncPrint("Hola");ncPrintDec(getCurrentPid());ncNewline();
-
 	/* Check quantum */
 	if(numberOfTicks < QUANTUM) {
 		numberOfTicks++;
@@ -202,6 +200,9 @@ void yieldSwitch() {
 	if(currentProcess->process->state == BLOCKED) {
 		numberOfTicks = QUANTUM;
 		runScheduler();
+	} else if(currentProcess->process->currentThread->thread->state == T_BLOCKED) {
+		currentProcess->process->threadTick = THREAD_QUANTUM;
+		runScheduler();
 	}
 }
 
@@ -248,7 +249,10 @@ void nextThread() {
 	removeDeadThreads(currentProcess->process);
 
 	/* Switch to the next thread */
-	currentProcess->process->currentThread->thread->state = T_READY;
+	if(currentProcess->process->currentThread->thread->state == T_RUNNING) {
+		currentProcess->process->currentThread->thread->state = T_READY;
+	}
+	//currentProcess->process->currentThread->thread->state = T_READY;
 	
 	while(currentProcess->process->currentThread->next->thread->state != T_READY) {
 		currentProcess->process->currentThread = currentProcess->process->currentThread->next;

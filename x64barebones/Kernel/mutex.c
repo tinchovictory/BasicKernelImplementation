@@ -31,8 +31,9 @@ void mutexUp(int id) {
 }
 
 void mutexDown(int id) {
-	mutexRequestAccess(id);
-	updateStatus(id, MUTEX_LOCKED);
+	if(mutexRequestAccess(id)) {
+		updateStatus(id, MUTEX_LOCKED);
+	}
 }
 
 void updateStatus(int id, int mutexStatus) {
@@ -76,32 +77,37 @@ int isLocked(int id) {
 	return mutex->status == MUTEX_LOCKED;
 }
 
-void mutexRequestAccess(int id) {
+int mutexRequestAccess(int id) {
+	int locked = 1;
 	mutexNode * mutex = findID(id);
-	while(isLocked(id)) {
+	if(isLocked(id)) {
 		int currentPid = getCurrentPid();
-		
-		addProcessToMutexList(mutex, currentPid);
-		blockProcess(currentPid);
+		int currentPthread = getCurrentPthread();
+
+		addThreadToMutexList(mutex, currentPid, currentPthread);
+		blockThread(currentPid, currentPthread);
+		locked = 0;
 	}
+	return locked;
 }
 
-void addProcessToMutexList(mutexNode * mutex, int pid) {
-	blockedProcessNode * node = (blockedProcessNode *)allocate(sizeof(blockedProcessNode));
+void addThreadToMutexList(mutexNode * mutex, int pid, int pthread) {
+	blockedThreadNode * node = (blockedThreadNode *)allocate(sizeof(blockedThreadNode));
 	node->pid = pid;
-	node->next = mutex->blockedProcessList;
-	mutex->blockedProcessList = node;
+	node->pthread = pthread;
+	node->next = mutex->blockedThreadList;
+	mutex->blockedThreadList = node;
 }
 
 void unlockProcesses(int id) {
-	blockedProcessNode * aux;
+	blockedThreadNode * aux;
 	mutexNode * mutex = findID(id);
-	while(mutex->blockedProcessList != NULL) {
-		aux = mutex->blockedProcessList->next;
+	while(mutex->blockedThreadList != NULL) {
+		aux = mutex->blockedThreadList->next;
 
-		unblockProcess(mutex->blockedProcessList->pid);
-		deallocate(mutex->blockedProcessList, sizeof(blockedProcessNode));
+		unblockThread(mutex->blockedThreadList->pid, mutex->blockedThreadList->pthread);
+		deallocate(mutex->blockedThreadList, sizeof(blockedThreadNode));
 
-		mutex->blockedProcessList = aux;
+		mutex->blockedThreadList = aux;
 	}
 }

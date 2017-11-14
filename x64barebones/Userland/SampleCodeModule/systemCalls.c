@@ -67,6 +67,7 @@ void mutexUp(int id) {
 
 void mutexDown(int id) {
 	systemCall(SYS_CALL_DOWN_MUTEX, id, 0, 0);
+	yield();
 }
 
 int getCurrentPid() {

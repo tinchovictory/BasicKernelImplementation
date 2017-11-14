@@ -6,16 +6,17 @@
 
 	#define NULL ((void *)0)
 
-	typedef struct blockedProcessNode {
+	typedef struct blockedThreadNode {
 		int pid;
-		struct blockedProcessNode * next;
-	} blockedProcessNode;
+		int pthread;
+		struct blockedThreadNode * next;
+	} blockedThreadNode;
 
 	typedef struct mutexNode{
 		int id;
 		int status;
 		struct mutexNode * next;
-		blockedProcessNode * blockedProcessList;
+		blockedThreadNode * blockedThreadList;
 	} mutexNode;
 
 	int createMutex();
@@ -36,9 +37,9 @@
 
 	int isLocked(int id);
 
-	void mutexRequestAccess(int id);
+	int mutexRequestAccess(int id);
 
-	void addProcessToMutexList(mutexNode * mutex, int pid);
+	void addThreadToMutexList(mutexNode * mutex, int pid, int pthread);
 
 	void unlockProcesses(int id);
 

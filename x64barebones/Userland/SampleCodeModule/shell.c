@@ -40,6 +40,45 @@ void test() {
 		}
 	}
 }
+int mutex = -1;
+void testMutex2() {
+	while(mutex == -1);
+
+	printf("Intento entrar\n");
+	mutexDown(mutex);
+	printf("Entre\n");
+	int j = 0;
+		while(j<100000000) {
+			j++;
+		}
+	printf("Voy a salir\n");
+	mutexUp(mutex);
+	printf("Ya sali\n");
+
+
+	while(1);
+}
+
+void testMutex() {
+	tcreate(getCurrentPid(), testMutex2);
+	//pcreate(testMutex2);
+	mutex = createMutex();
+	mutexDown(mutex);
+	printf("Bloqueo\n");
+	
+	int j = 0;
+	while(j<100000000) {
+		j++;
+	}
+
+	mutexUp(mutex);
+	printf("Lo libere\n");
+
+
+	while(1);
+}
+
+/* Desde aca */
 
 void run(void * entryPoint) {
 	int pid = pcreate(entryPoint);
@@ -82,8 +121,9 @@ void processComand(char * buffer){
 		//TODO
 	}else if(!strcmp(buffer,"test")) {
 		run(test);
-	}
-	else{
+	}else if(!strcmp(buffer,"mutex")){
+		run(testMutex);
+	}else{
 		puts("  Command not found - help for instructions");
 	}
 }
