@@ -125,6 +125,7 @@ uint64_t tcreate(uint64_t pid, void * entryPoint){
 }
 
 uint64_t pkill(uint64_t pid){
+	removeScreen(pid);
 	removeProcess(pid);
 	return 1;
 }
