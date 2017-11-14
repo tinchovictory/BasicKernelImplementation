@@ -11,8 +11,17 @@
 #define CAPS_LOCK_PRESSED 0x3A
 #define CAPS_LOCK_RELEASED 0xBA
 
+#define L_ALT_PRESSED 0x38
+#define L_ALT_RELEASED 0xB8
+#define R_ALT_PRESSED 0x38
+#define R_ALT_RELEASED 0xB8
+#define L_ARROW_PRESSED 0x4B
+#define R_ARROW_PRESSED 0x4D
+
+
 unsigned int checkKeyboard();
 int getKeyboard();
+void checkSwapScreen(int key);
 
 static char lKeyboard[128] = {0,'`','1','2','3','4','5','6','7','8','9','0','-','=','\b'/*borrar*/,
 						'\t'/*tab*/,'q','w','e','r','t','y','u','i','o','p','[',']','\n',
@@ -30,6 +39,7 @@ static int * current = buffer;
 static int * last = buffer;
 
 int uppercase = 1;
+int altKey = 0;
 
 void keyBoardHandler(){
 	if(checkKeyboard()){
@@ -45,6 +55,12 @@ void keyBoardHandler(){
 			uppercase *=-1;
 		}
 
+
+
+		/* Swap screen */
+		checkSwapScreen(key);
+
+
 		if(key >= 128){ // no es un caracter valido
 			return;
 		}
@@ -59,8 +75,10 @@ void keyBoardHandler(){
 		if(*last == 0 && character != 0){
 			*(last++) = character;
 
-			/* Unblock on focus process */
-			unblockProcess(getFocusProcessPid());
+			/* Unblock on focus thread */
+			//unblockProcess(getFocusProcessPid());
+			int pid = getFocusProcessPid();
+			unblockThread(pid, getCurrentThreadOfProcess(pid));//VA A FALLAR
 
 			if(last - buffer >= BUFFER_SIZE){ //vuelvo al principio del buffer
 				last = buffer;
@@ -86,4 +104,22 @@ int getKey(){
 	}
 		
 	return character;
+}
+
+void checkSwapScreen(int key) {
+	if(key == L_ALT_PRESSED || key == R_ALT_PRESSED) {
+		altKey = 1;
+	} else if(key == L_ALT_RELEASED || key == R_ALT_RELEASED) {
+		altKey = 0;
+	}
+
+	if(altKey && key == L_ARROW_PRESSED) {
+		//previous screeen
+		loadPreviousScreen();
+	}
+
+	if(altKey && key == R_ARROW_PRESSED) {
+		//next screeen
+		loadNextScreen();	
+	}
 }

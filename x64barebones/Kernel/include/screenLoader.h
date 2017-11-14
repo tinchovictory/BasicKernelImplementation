@@ -12,6 +12,7 @@
 		char * screen;
 		char * currentPosition;
 		struct screenNode * next;
+		struct screenNode * prev;
 	} screenNode;
 
 	int loadScreen(int pid);
@@ -28,7 +29,8 @@
 
 	void saveScreen();
 	
-	screenNode * addScreen(int pid);
+	//screenNode * addScreen(int pid);
+	screenNode * addScreen(screenNode * current, screenNode * prev, int pid);
 	screenNode * newScreenNode();
 
 	char * findScreenByPid(int pid);
@@ -36,5 +38,8 @@
 
 	void removeScreen(int pid);
 	screenNode * removeScreenInner(screenNode * currentNode, int pid);
+
+	void loadPreviousScreen();
+	void loadNextScreen();
 
 #endif

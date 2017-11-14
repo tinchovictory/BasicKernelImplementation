@@ -18,6 +18,7 @@
 #define SYS_CALL_UP_MUTEX 13
 #define SYS_CALL_DOWN_MUTEX 14
 #define SYS_CALL_CURRENT_PID 15
+#define SYS_CALL_CREATE_PROCESS_BACKGROUND 16
 
 //#define MEMORY_ASIGN_CODE 0
 //#define MEMORY_FREE_CODE 1
@@ -35,6 +36,8 @@ int blockIfNotOnFocus();
 uint64_t write(uint64_t fileDescriptor, void * buf, uint64_t nBytes);
 
 uint64_t pcreate(void * entryPoint);
+
+uint64_t pcreateBackground(void * entryPoint);
 
 uint64_t tcreate(uint64_t pid, void * entryPoint);
 

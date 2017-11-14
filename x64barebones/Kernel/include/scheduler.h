@@ -10,7 +10,6 @@
 	typedef struct node {
 		struct process * process;
 		struct node * next;
-		int threadTick;
 	} schedulerNode;
 
 	typedef struct node * schedulerQueue;
@@ -40,6 +39,8 @@
 
 	int getCurrentPid();
 
+	int getCurrentPthread();
+
 
 	/** Initialize scheduler **/
 	void setKernelStack();
@@ -53,6 +54,8 @@
 
 	threadNode * getThreadWithPthread(int pthread, processNode * process);
 
+	int getCurrentThreadOfProcess(int pid);
+
 	void removeProcess(int pid);
 
 	void removeThread(int pid, int pthread);
@@ -64,6 +67,14 @@
 	void blockProcess(int pid);
 
 	void unblockProcess(int pid);
+
+	void blockThread(int pid, int pthread);
+
+	void unblockThread(int pid, int pthread);
+
+	int allThreadsAreBlocked(processNode * process);
+
+
 
 	void yieldSwitch();
 

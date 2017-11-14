@@ -19,6 +19,7 @@
 #define SYS_CALL_UP_MUTEX 13
 #define SYS_CALL_DOWN_MUTEX 14
 #define SYS_CALL_CURRENT_PID 15
+#define SYS_CALL_CREATE_PROCESS_BACKGROUND 16
 
 //#define MEMORY_ASIGN_CODE 0
 //#define MEMORY_FREE_CODE 1
@@ -48,6 +49,8 @@ void free(void * memPosition);
 void ps();
 
 int pcreate(void * entryPoint);
+
+int pcreateBackground(void * entryPoint);
 
 void pkill(int pid);
 

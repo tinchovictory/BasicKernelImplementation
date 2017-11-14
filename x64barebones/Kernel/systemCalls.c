@@ -33,7 +33,8 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 		}
 		
 		if(readBytes == 0) {
-			blockProcess(getCurrentPid());	
+			//blockProcess(getCurrentPid());
+			blockThread(getCurrentPid(),getCurrentPthread());
 		}
 		return readBytes;
 	}else if(fileDescriptor == ETHERNET_FD){
@@ -44,7 +45,8 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 
 int blockIfNotOnFocus(){
 	if (!isCurrentProcessOnFocus()) {
-		blockProcess(getCurrentPid());
+		//blockProcess(getCurrentPid());
+		blockThread(getCurrentPid(),getCurrentPthread());
 		return 1;
 	}
 	return 0;
@@ -109,6 +111,12 @@ uint64_t ps() {
 
 
 uint64_t pcreate(void * entryPoint){
+	int pid = addProcess(entryPoint);
+	loadScreen(pid);
+	return pid;
+}
+
+uint64_t pcreateBackground(void * entryPoint) {
 	return addProcess(entryPoint);
 }
 
@@ -198,6 +206,11 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2,
 		case SYS_CALL_CREATE_PROCESS:
 			/* param1: entryPoint */
 			return pcreate((void *) param1);
+
+		case SYS_CALL_CREATE_PROCESS_BACKGROUND:
+			/* param1: entryPoint */
+			return pcreateBackground((void *) param1);
+
 
 		case SYS_CALL_END_PROCESS:
 			/* param1: pid */

@@ -75,7 +75,7 @@ void addProcessToQueue(processPointer p) {
 	schedulerNode * node = (schedulerNode *) allocate(PAGE_SIZE);
 
 	node->process = p;
-	node->threadTick = 0;
+	node->process->threadTick = 0;
 
 	if(currentProcess == NULL) {
 		processQueue = node;
@@ -152,11 +152,37 @@ void blockProcess(int pid) {
 
 void unblockProcess(int pid) {
 	processNode * process = getProcessWithPid(pid);
-	/* Check for dead process */
+	//Check for dead process
 	if(process->state == BLOCKED) {
 		process->state = READY;
 	}
 }
+
+void blockThread(int pid, int pthread) {
+	processNode * process = getProcessWithPid(pid);
+	threadNode * thread = getThreadWithPthread(pthread, process);
+
+	thread->state = T_BLOCKED;
+	process->threadTick = THREAD_QUANTUM;
+
+	/* Check if all thread of the process are blocked */
+	if(allThreadsAreBlocked(process)) {
+		blockProcess(pid);
+	}
+
+}
+
+void unblockThread(int pid, int pthread) {
+	processNode * process = getProcessWithPid(pid);
+	threadNode * thread = getThreadWithPthread(pthread, process);
+
+	if(thread->state == T_BLOCKED) {
+		thread->state = T_READY;
+	}
+
+	unblockProcess(pid);
+}
+
 
 void yieldSwitch() {
 	if(currentProcess == NULL) {
@@ -170,6 +196,10 @@ void yieldSwitch() {
 
 int getCurrentPid() {
 	return currentProcess->process->pid;
+}
+
+int getCurrentPthread() {
+	return currentProcess->process->currentThread->thread->pthread;
 }
 
 /*
@@ -194,11 +224,11 @@ void printAllProcess() {
 /* Threads */
 
 void threadCheck() {
-	if( (currentProcess->threadTick) < THREAD_QUANTUM) {
-		currentProcess->threadTick++;
+	if( (currentProcess->process->threadTick) < THREAD_QUANTUM) {
+		currentProcess->process->threadTick++;
 		return;
 	}
-	currentProcess->threadTick = 0;
+	currentProcess->process->threadTick = 0;
 	nextThread();
 }
 
@@ -247,6 +277,11 @@ threadNode * getThreadWithPthread(int pthread, processNode * process) {
 	return NULL;
 }
 
+int getCurrentThreadOfProcess(int pid) {
+	processNode * process = getProcessWithPid(pid);
+	return process->currentThread->thread->pthread;
+}
+
 
 void removeDeadThreads(processNode * process) {
 	int i;
@@ -269,6 +304,19 @@ void removeDeadThreads(processNode * process) {
 			current = current->next;
 		}
 	}
+}
+
+int allThreadsAreBlocked(processNode * process) {
+	int i;
+	threadLibrary * current = process->threadLibrary;
+	for(i = 0; i < process->threadSize; i++) {
+		if(current->thread->state == T_READY) {
+			return 0;
+		}
+		current = current->next;
+	}
+
+	return 1;
 }
 
 /* - Debuging - */

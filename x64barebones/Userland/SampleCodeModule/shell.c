@@ -2,6 +2,27 @@
 #include <string.h>
 #include <systemCalls.h>
 
+void test() {
+	while(1) {
+		char c;
+		while((c = getchar()) != '\n') {
+			//putchar(c);		
+		}
+		char * array = (char *) malloc(sizeof(char) * 5);
+		array[0] = 'h';
+		array[1] = 'o';
+		array[2] = 0;
+		putchar(c);
+		printf("%s\n", array);
+	}
+}
+
+void run(void * entryPoint) {
+	int pid = pcreate(entryPoint);
+	//foreground
+	//killprocess
+}
+
 void processComand(char * buffer){
 	if (!strcmp(buffer,"help")){
 		printf("  echo : print on screen\n");
@@ -35,12 +56,13 @@ void processComand(char * buffer){
 		//TODO
 	}else if(startsWith("prodcons",buffer)){
 		//TODO
+	}else if(!strcmp(buffer,"test")) {
+		run(test);
 	}
 	else{
 		puts("  Command not found - help for instructions");
 	}
 }
-
 
 void shell(){
 

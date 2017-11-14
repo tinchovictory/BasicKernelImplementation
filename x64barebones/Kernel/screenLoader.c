@@ -1,5 +1,7 @@
 #include "screenLoader.h"
 
+#include <naiveConsole.h>
+
 static screenNode * list = NULL; // List for backup screens.
 static int onFocusPid = NO_FOCUS;
 
@@ -17,7 +19,8 @@ int loadScreen(int pid) {
 	screenNode * node = findScreenNodeByPid(pid);
 	// If the pid has no screen data assigned, I create one.
 	if (node == NULL) {
-		node = addScreen(pid);
+		//node = addScreen(pid);
+		node = addScreen(list, NULL, pid);
 
 		if (node == NULL) {
 			return 0;
@@ -45,7 +48,8 @@ screenNode * getCurrentScreenNode() {
 
 	if (node == NULL) {
 		//ncPrint("About to add screen node for current process.");ncPrintDec(getCurrentPid());ncNewline();
-		node = addScreen(getCurrentPid());
+		//node = addScreen(getCurrentPid());
+		node = addScreen(list, NULL, getCurrentPid());
 
 		if (node == NULL) {
 			return NULL;
@@ -113,7 +117,7 @@ void saveScreen() {
 }
 
 // After creating a new screen, I insert it to my list.
-screenNode * addScreen(int pid) {
+/*screenNode * addScreen(int pid) {
 	screenNode * node = newScreenNode();
 
 	if (node == NULL) {
@@ -125,7 +129,25 @@ screenNode * addScreen(int pid) {
 	list = node;
 
 	return node;
+}*/
+
+screenNode * addScreen(screenNode * current, screenNode * prev, int pid) {
+	if(current == NULL) {
+		screenNode * node = newScreenNode();
+		if (node == NULL) {
+			return NULL;
+		}
+		node->pid = pid;
+		node->next = NULL;
+		node->prev = prev;
+
+		return node;
+	}
+	current->next = addScreen(current->next, current, pid);
+	return current;
 }
+
+
 
 // Create a new screen node with its own screen and screen cursor.
 screenNode * newScreenNode() {
@@ -188,4 +210,33 @@ screenNode * removeScreenInner(screenNode * currentNode, int pid) {
 	}
 	currentNode->next = removeScreenInner(currentNode->next, pid);
 	return currentNode;
+}
+
+
+/* Switchable screens */
+
+void loadNextScreen() {
+	ncPrint("aca");
+	if(onFocusPid == NO_FOCUS) {
+		return;
+	}
+	screenNode * currentScreen = getCurrentScreenNode();
+	int nextPid;
+	if(currentScreen->next != NULL) {
+		ncPrint(" y entre");
+		nextPid = currentScreen->next->pid;
+		loadScreen(nextPid);
+	}
+}
+
+void loadPreviousScreen() {
+	if(onFocusPid == NO_FOCUS) {
+		return;
+	}
+	screenNode * currentScreen = getCurrentScreenNode();
+	int prevPid;
+	if(currentScreen->prev != NULL) {
+		prevPid = currentScreen->prev->pid;
+		loadScreen(prevPid);
+	}
 }

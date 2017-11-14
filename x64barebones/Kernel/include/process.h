@@ -24,6 +24,8 @@
 		threadLibrary * currentThread;
 		int threadSize;
 
+		int threadTick;
+
 		int currentPThread;
 	} processNode;
 

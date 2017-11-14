@@ -365,9 +365,9 @@ void onFocusTest(){ //change to real init process
 		
 	loadScreen(1);
 
-	addProcess(sampleCodeModuleAddress);
+	//addProcess(sampleCodeModuleAddress);
 
-	addProcess(changeOnFocus);
+	//addProcess(changeOnFocus);
 }
 
 int main()
