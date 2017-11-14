@@ -3,24 +3,31 @@
 #include <memoryManager.h>
 #include <stackFrame.h>
 #include <threads.h>
-
-#include <naiveConsole.h>
+#include <videoDriver.h>
 
 /* Number of process created */
 static int currentPid = 0;
 
-processPointer createProcess(const char* name) {
+processNode * createProcess(char * name) {
 	/* Create process in memory, asign a base pointer, initialize stack frame */
-	processPointer process = (processPointer) allocate(PAGE_SIZE);
-	//process->name = name;
-	process->pid = currentPid;
+	processNode * process = (processNode *) allocate(PAGE_SIZE);
+	process->pid = currentPid++;
 	process->currentPThread = 0;
 	process->threadSize = 0;
 	process->state = READY;
-
-	currentPid++;
+	createProcessName(process,name);
 
 	return process;
+}
+
+void createProcessName(processNode * process, char * name) {
+	int i;
+
+	process->name = (char *) allocate(NAME_LENGTH*sizeof(char));
+
+	for (i = 0 ; name[i] != 0 ; i++) {
+		(process->name)[i] = name[i];
+	}
 }
 
 void freeProcess(processNode * process) {
@@ -31,7 +38,8 @@ void freeProcess(processNode * process) {
 }
 
 void printProcessInfo(processNode * process) {
-	ncPrint("Pid: ");ncPrintDec(process->pid);ncPrint(" status: ");ncPrint(getStatus(process->state));ncNewline();
+
+	print("Pid: ");print(process->pid);print(", status: ");print(getStatus(process->state));newLineVid();
 }
 
 char * getStatus(processState state) {

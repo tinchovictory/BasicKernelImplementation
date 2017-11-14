@@ -7,6 +7,8 @@
 
 	#define NUMBER_OF_PAGES 256
 
+	#define NAME_LENGTH 50
+
 	typedef enum {READY, RUNNING, BLOCKED, DEAD} processState;
 
 	/*
@@ -16,9 +18,10 @@
 
 	
 	typedef struct process {
+		int ppid;
 		int pid;
 		processState state;
-		char * name;//cambiar
+		char * name;
 
 		threadLibrary * threadLibrary;
 		threadLibrary * currentThread;
@@ -29,10 +32,9 @@
 		int currentPThread;
 	} processNode;
 
-	typedef struct process * processPointer;
-
 	/* Creates a process in memory from the process entry point */
-	processPointer createProcess();
+	processNode * createProcess();
+	void createProcessName(processNode * process, char * name)
 
 	/* Free Process structure */
 	void freeProcess(processNode * process);

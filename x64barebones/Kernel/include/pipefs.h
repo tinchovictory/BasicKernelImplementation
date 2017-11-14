@@ -7,7 +7,7 @@
 	#define PIPE_BUF_SIZE 4096
 
 	typedef struct pipeNode {
-		char name[NAME_SIZE];
+		char * name[NAME_SIZE];
 
 		char * buffer;
 		char * readPointer;
@@ -29,7 +29,6 @@
 
 	void createName(int fromPid, int toPid, char name[NAME_SIZE]);
 	int createPidName(int pid, char name[NAME_SIZE], int startPos);
-	int inversedId(int id, char aux[NAME_SIZE]);
 	int getReceiverPid(char name[NAME_SIZE]);
 
 #endif

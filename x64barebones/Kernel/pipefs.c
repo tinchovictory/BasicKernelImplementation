@@ -2,7 +2,7 @@
 #include <memoryManager.h>
 #include <scheduler.h>
 
-#include <naiveConsole.h>
+#include <myStdLib.h>
 
 static pipeNode * pipeList = NULL;
 
@@ -16,6 +16,7 @@ pipeNode * createPipe(int fromPid, int toPid) {
 	int i;
 
 	pipeNode * pipe = (pipeNode *) allocate(sizeof(pipeNode));
+	pipe->name = (char *) allocate(NAME_SIZE*sizeof(char));
 	createName(fromPid, toPid, pipe->name);
 	pipe->buffer = (char *) allocate(PIPE_BUF_SIZE);
 
@@ -116,50 +117,9 @@ int equalName(char * str1, char * str2) {
 void createName(int fromPid, int toPid, char name[NAME_SIZE]) {
 	int i = 0;
 
-	i = createPidName(fromPid,name,0);
+	i = itoa(fromPid,name);
 
 	name[i++] = '-';
 
-	createPidName(toPid,name,i);
-}
-
-int createPidName(int pid, char name[NAME_SIZE], int startPos) {
-	char aux[NAME_SIZE] = {0};
-	int i = inversedId(pid,aux);
-	int endPos = startPos + i;
-
-	while(i != 0) {
-		name[endPos-i] = aux[i-1];
-		i--;
-	}
-
-	return endPos;
-}
-
-int inversedId(int id, char aux[NAME_SIZE]) {
-	int length = 0;
-
-	if(id == 0) {
-		aux[length++] = '0';
-	} else {
-		while(id != 0) {
-			aux[length++] = (id % 10) + '0';
-			id /= 10;
-		}
-	}
-
-	return length;
-}
-
-int getReceiverPid(char name[NAME_SIZE]) {
-	int i = 0, pid = 0;
-	while(name[i++] != '-'); // I move to receiver pid
-
-	while(name[i]) {
-		pid *= 10;
-		pid += (name[i] - '0');
-		i++;
-	}
-
-	return pid;
+	itoa(toPid,&name[i]);
 }

@@ -1,5 +1,5 @@
-#ifndef __MYMATH
-#define __MYMATH
+#ifndef __MY_MATH__
+#define __MY_MATH__
 
 // My Ceil is different from that defined in math.h
 // This will return an int instead of a double

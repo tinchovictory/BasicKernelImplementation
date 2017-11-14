@@ -67,6 +67,27 @@ void print(const char * string){
 	}
 }
 
+void printDec(int number){
+	int length = intLength(number);
+	char character;
+	int divisor = 1;
+
+	while (length - 1 > 0) {
+		divisor *= 10;
+	}
+
+	while (divisor) {
+		character = (number % 10) + '0';
+		printCharacters(character);
+		number /= 10;
+		divisor /= 10;
+	}
+}
+
+void newLineVid() {
+	newLine(screen,currentPosition);
+};
+
 void newLine(char * myScreen, char ** myCurrentPos){
 	*myCurrentPos +=  (myScreen - *myCurrentPos) % (WINDOW_WIDTH*2) + WINDOW_WIDTH*2;
 	checkEndOfScreen(myScreen,myCurrentPos);

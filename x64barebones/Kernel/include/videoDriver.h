@@ -17,8 +17,12 @@
 
 	void print(const char * string);
 
+	void printDec(int number);
+
 	void printCharacters(const char character);
 	void printCharactersInner(const char character, char * myScreen, char ** myCurrentPos);
+
+	void newLineVid();
 
 	void newLine(char * myScreen, char ** myCurrentPos);
 
