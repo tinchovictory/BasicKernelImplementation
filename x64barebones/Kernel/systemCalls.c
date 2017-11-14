@@ -34,7 +34,7 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 		
 		if(readBytes == 0) {
 			//blockProcess(getCurrentPid());
-			blockThread(getCurrentPid(),getCurrentPthread());
+			blockThread(getCurrentPid(),getCurrentPthread(), T_BLOCKED_IO);
 		}
 		return readBytes;
 	}else if(fileDescriptor == ETHERNET_FD){
@@ -46,7 +46,7 @@ uint64_t read(uint64_t fileDescriptor, void * buf, uint64_t nBytes){
 int blockIfNotOnFocus(){
 	if (!isCurrentProcessOnFocus()) {
 		//blockProcess(getCurrentPid());
-		blockThread(getCurrentPid(),getCurrentPthread());
+		blockThread(getCurrentPid(),getCurrentPthread(), T_BLOCKED_IO);
 		return 1;
 	}
 	return 0;
@@ -141,7 +141,7 @@ uint64_t ls(uint64_t pid){
 }
 */
 uint64_t ps(){
-	printAllProcess();
+	//printAllProcess();
 	return 1;
 }
 

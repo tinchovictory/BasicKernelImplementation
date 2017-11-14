@@ -64,23 +64,29 @@
 
 	void removeDeadThreads(processNode * process);
 
-	void blockProcess(int pid);
+	void blockProcess(int pid, processState blockType);
 
-	void unblockProcess(int pid);
+	void unblockProcess(int pid, processState blockType);
 
-	void blockThread(int pid, int pthread);
+	void blockThread(int pid, int pthread, threadState blockType);
 
-	void unblockThread(int pid, int pthread);
+	void unblockThread(int pid, int pthread, threadState blockType);
 
-	void unblockAllThreads(int pid);
+	void unblockAllThreads(int pid, threadState blockType);
 
 	int allThreadsAreBlocked(processNode * process);
+
+	int isProcessBlocked(processState state);
+
+	int isThreadBlocked(threadState state);
 
 
 
 	void yieldSwitch();
 
 	void printAllProcess();
+
+	processState getBlockProcessType(threadState state);
 
 
 	/* - Debuging - */

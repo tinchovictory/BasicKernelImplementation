@@ -106,7 +106,7 @@ void startLoadingKernel() {
 
 
 /* Debugging processes */
-
+/*
 void thread() {
 	while(1) {
 		int j=0;
@@ -214,7 +214,7 @@ void b() {
 		}
 	}
 }
-/*
+
 int mutexId = -1;
 void m1() {
 	int h = 0, t = 0;

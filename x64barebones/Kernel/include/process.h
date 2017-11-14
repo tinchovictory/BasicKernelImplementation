@@ -9,7 +9,7 @@
 
 	#define NAME_LENGTH 50
 
-	typedef enum {READY, RUNNING, BLOCKED, DEAD} processState;
+	typedef enum {READY, RUNNING, BLOCKED_IO, BLOCKED_MUTEX, BLOCKED_PIPE, DEAD} processState;
 
 	/*
 		Registers are pushed into the stack instead of being stored in the pcb

@@ -85,7 +85,7 @@ int mutexRequestAccess(int id) {
 		int currentPthread = getCurrentPthread();
 
 		addThreadToMutexList(mutex, currentPid, currentPthread);
-		blockThread(currentPid, currentPthread);
+		blockThread(currentPid, currentPthread, T_BLOCKED_MUTEX);
 		locked = 0;
 	}
 	return locked;
@@ -105,7 +105,7 @@ void unlockProcesses(int id) {
 	while(mutex->blockedThreadList != NULL) {
 		aux = mutex->blockedThreadList->next;
 
-		unblockThread(mutex->blockedThreadList->pid, mutex->blockedThreadList->pthread);
+		unblockThread(mutex->blockedThreadList->pid, mutex->blockedThreadList->pthread, T_BLOCKED_MUTEX);
 		deallocate(mutex->blockedThreadList, sizeof(blockedThreadNode));
 
 		mutex->blockedThreadList = aux;
