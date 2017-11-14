@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <systemCalls.h>
+#include <philosophers.h>
 
 void thread() {
 	while(1) {
@@ -10,17 +11,6 @@ void thread() {
 		}
 		printf("soy el thread\n");
 	}
-}
-
-void philosophers {
-	printf("Hola\n");
-	
-	int j = 0;
-	while(j<100000000) {
-		j++;
-	}
-
-	exit();
 }
 
 void test() {
@@ -126,8 +116,8 @@ void processComand(char * buffer){
 		//myChat();
 	}else if(!strcmp("ps",buffer)){
 		ps();
-	}else if(startsWith("philosophers",buffer)){
-		run(philosophers);
+	}else if(!strcmp("philosophers",buffer)){
+		//run(philosophers);
 	}else if(startsWith("prodcons",buffer)){
 		//TODO
 	}else if(!strcmp(buffer,"test")) {
