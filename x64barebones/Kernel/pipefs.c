@@ -123,3 +123,16 @@ void createName(int fromPid, int toPid, char name[NAME_SIZE]) {
 
 	itoa(toPid,&name[i]);
 }
+
+int getReceiverPid(char name[NAME_SIZE]) {
+	int i = 0, pid = 0;
+	while(name[i++] != '-'); // I move to receiver pid
+
+	while(name[i]) {
+		pid *= 10;
+		pid += (name[i] - '0');
+		i++;
+	}
+
+	return pid;
+}

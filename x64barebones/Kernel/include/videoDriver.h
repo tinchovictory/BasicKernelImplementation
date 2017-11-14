@@ -22,9 +22,9 @@
 	void printCharacters(const char character);
 	void printCharactersInner(const char character, char * myScreen, char ** myCurrentPos);
 
-	void newLineVid();
+	void newLine();
 
-	void newLine(char * myScreen, char ** myCurrentPos);
+	void myNewLine(char * myScreen, char ** myCurrentPos);
 
 	void backSpace(char * myScreen, char ** myCurrentPos);
 

@@ -85,11 +85,11 @@ void printDec(int number){
 	}
 }
 
-void newLineVid() {
-	newLine(screen,&currentPosition);
+void newLine() {
+	myNewLine(screen,&currentPosition);
 };
 
-void newLine(char * myScreen, char ** myCurrentPos){
+void myNewLine(char * myScreen, char ** myCurrentPos){
 	*myCurrentPos +=  (myScreen - *myCurrentPos) % (WINDOW_WIDTH*2) + WINDOW_WIDTH*2;
 	checkEndOfScreen(myScreen,myCurrentPos);
 }
@@ -113,7 +113,7 @@ void printCharacters(const char character){
 void printCharactersInner(const char character, char * myScreen, char ** myCurrentPos){
 	// Check for special characters.
 	if(character == '\n'){
-		newLine(myScreen,myCurrentPos);
+		myNewLine(myScreen,myCurrentPos);
 	}else if(character == '\b'){
 		backSpace(myScreen,myCurrentPos);
 	}else if(character == '\t'){
