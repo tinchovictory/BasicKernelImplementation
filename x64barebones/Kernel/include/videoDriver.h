@@ -6,6 +6,7 @@
 	#define WINDOW_SIZE WINDOW_WIDTH * WINDOW_HEIGHT * 2
 	#define DEFAULT_COLOR 0x0F
 	#define END_OF_SCREEN WINDOW_WIDTH*2 * WINDOW_HEIGHT
+	#define TABSIZE 12
 
 	#define NULL ((void *)0)
 

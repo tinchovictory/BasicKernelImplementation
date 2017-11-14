@@ -103,9 +103,11 @@ void backSpace(char * myScreen, char ** myCurrentPos){
 }
 
 void myPrintTab(char ** myCurrentPos) {
-	*myCurrentPos += 8; 
+	int relativePos = (int)(*myCurrentPos - screen)/2;
+	int column= relativePos % WINDOW_WIDTH;
+	*myCurrentPos += (TABSIZE-(column%TABSIZE))*2; 
+ 
 }
-
 void printTab() {
 	myPrintTab(&currentPosition);
 }
@@ -128,3 +130,4 @@ void printCharactersInner(const char character, char * myScreen, char ** myCurre
 	}
 	checkEndOfScreen(myScreen,myCurrentPos);
 }
+
