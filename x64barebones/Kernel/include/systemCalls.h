@@ -39,9 +39,9 @@ int blockIfNotOnFocus();
 
 uint64_t write(uint64_t fileDescriptor, void * buf, uint64_t nBytes);
 
-uint64_t pcreate(void * entryPoint);
+uint64_t pcreate(void * entryPoint, char * name);
 
-uint64_t pcreateBackground(void * entryPoint);
+uint64_t pcreateBackground(void * entryPoint, char * name);
 
 uint64_t tcreate(uint64_t pid, void * entryPoint);
 

@@ -33,14 +33,15 @@
 	} processNode;
 
 	/* Creates a process in memory from the process entry point */
-	processNode * createProcess();
+	processNode * createProcess(char * name, int ppid);
+
 	void createProcessName(processNode * process, char * name);
 
 	/* Free Process structure */
 	void freeProcess(processNode * process);
 
 	/* Print process state */
-	void printProcesInfo(processNode * process);
+	void printProcessInfo(processNode * process);
 	char * getStatus(processState state);
 
 	/* Create a stack frame for proces initialization */

@@ -62,8 +62,8 @@ void * switchKernelToUser () {
 	return process->currentThread->thread->userStack;
 }
 
-int addProcess(void * entryPoint) {
-	processNode * process = createProcess();
+int addProcess(void * entryPoint, char * name) {
+	processNode * process = createProcess(name, getCurrentPid());
 	addProcessToQueue(process);
 	addThreadToProcess(process->pid, entryPoint);
 	return process->pid;
@@ -207,6 +207,9 @@ void yieldSwitch() {
 }
 
 int getCurrentPid() {
+	if(currentProcess == NULL) {
+		return -1;
+	}
 	return currentProcess->process->pid;
 }
 
@@ -344,6 +347,62 @@ int allThreadsAreBlocked(processNode * process) {
 	}
 
 	return 1;
+}
+
+/* Print */
+void printAllProcess() {
+	if(processQueue == NULL){
+		return;
+	}
+	schedulerQueue queue = processQueue;
+	int i;
+
+	printPsHeader();
+
+	while(i < queueSize){
+		printProcessInfo(queue->process);
+		queue = queue->next;
+		i++;
+	}
+
+	newLine();newLine();newLine();
+}
+
+
+void printPsHeader() {
+
+	int process = 0, blocked = 0, running = 0, ready = 0, threads = 0;
+
+	schedulerQueue current = processQueue;
+	int i;
+
+	while(i < queueSize){
+		process++;
+		if(isProcessBlocked(current->process->state)) {
+			blocked++;
+		} else if(current->process->state == RUNNING) {
+			running++;
+		} else if(current->process->state == READY) {
+			ready++;
+		}
+		threads += current->process->threadSize;
+
+		current = current->next;
+		i++;
+	}
+
+	newLine();
+	print("Processses: ");
+	printDec(process);print(" total, ");
+	printDec(running);print(" running, ");
+	printDec(ready);print(" ready, ");
+	printDec(blocked);print(" blocked");
+	newLine();
+	print("Threads: ");
+	printDec(threads);print(" total");
+	newLine();newLine();
+	print("PID");printTab();print("Command");printTab();print("#Threads");printTab();print("PPID");printTab();print("State");
+	newLine();
 }
 
 /* - Debuging - */

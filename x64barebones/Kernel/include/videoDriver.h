@@ -28,7 +28,9 @@
 
 	void backSpace(char * myScreen, char ** myCurrentPos);
 
-	void printTab(char ** myCurrentPos);
+	void myPrintTab(char ** myCurrentPos);
+
+	void printTab();
 
 	void setScreen(char * myScreen, char * myCurrentPos);
 
