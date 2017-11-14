@@ -40,11 +40,9 @@ void processComand(char * buffer){
 	}else if(!strcmp("ps",buffer)){
 		ps();
 	}else if(!strcmp("philosophers",buffer)){
-		char * name = (char *) malloc(sizeof(char)*10);
-		name[0] = 'p';name[1] = 'h';name[2] = 'i';name[3] = 'l';name[4] = 'o';name[5] = 's';name[6] = 'o';name[7] = 0;
-		run(philosophers, name);
+		//run(philosophers, name);
 	}else if(startsWith("prodcons",buffer)){
-		run(prodcons);
+		//run(prodcons);
 	}else{
 		puts("  Command not found - help for instructions");
 	}
@@ -74,14 +72,9 @@ void shell(){
 }
 
 
-
 /****************************************************/
 /****************************************************/
-<<<<<<< HEAD
 /*******************PHILOSOPHERS*******************/
-=======
-/****************** PHILOSOPHERS.c ******************/
->>>>>>> 22f7e79180e696fb7c20a9575817abfd8d2ab3a0
 /****************************************************/
 /****************************************************/
 
