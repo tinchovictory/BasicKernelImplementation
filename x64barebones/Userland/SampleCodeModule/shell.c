@@ -12,7 +12,7 @@ void thread() {
 	}
 }
 
-void philosophers {
+void philosophers() {
 	printf("Hola\n");
 	
 	int j = 0;
@@ -89,6 +89,44 @@ void testMutex() {
 	while(1);
 }
 
+int semaphore = -1;
+void testSem2() {
+	while(semaphore == -1);
+
+	printf("Intento entrar\n");
+	semaphoreDown(semaphore);
+	printf("Entre\n");
+	int j = 0;
+		while(j<100000000) {
+			j++;
+		}
+	printf("Voy a salir\n");
+	semaphoreUp(semaphore);
+	printf("Ya sali\n");
+
+
+	while(1);
+}
+
+void testSem() {
+	tcreate(getCurrentPid(), testSem2);
+	//pcreate(testMutex2);
+	semaphore = createSemaphore(1);
+	semaphoreDown(semaphore);
+	printf("Bloqueo\n");
+	
+	int j = 0;
+	while(j<100000000) {
+		j++;
+	}
+
+	semaphoreUp(semaphore);
+	printf("Lo libere\n");
+
+
+	while(1);
+}
+
 /* Desde aca */
 
 void run(void * entryPoint) {
@@ -134,6 +172,8 @@ void processComand(char * buffer){
 		run(test);
 	}else if(!strcmp(buffer,"mutex")){
 		run(testMutex);
+	}else if(!strcmp(buffer,"semaphore")){
+		run(testSem);
 	}else{
 		puts("  Command not found - help for instructions");
 	}

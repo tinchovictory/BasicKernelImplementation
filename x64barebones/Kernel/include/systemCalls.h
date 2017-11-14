@@ -19,6 +19,10 @@
 #define SYS_CALL_DOWN_MUTEX 14
 #define SYS_CALL_CURRENT_PID 15
 #define SYS_CALL_CREATE_PROCESS_BACKGROUND 16
+#define SYS_CALL_CREATE_SEMAPHORE 17
+#define SYS_CALL_END_SEMAPHORE 18
+#define SYS_CALL_UP_SEMAPHORE 19
+#define SYS_CALL_DOWN_SEMAPHORE 20
 
 //#define MEMORY_ASIGN_CODE 0
 //#define MEMORY_FREE_CODE 1
@@ -51,6 +55,8 @@ void * mallocSysCall(uint64_t bytes);
 
 uint64_t freeSysCall(void * memoryPosition);
 
+uint64_t createMutexSysCall();
+
 uint64_t endMutexSysCall(uint64_t id);
 
 uint64_t upMutexSysCall(uint64_t id);
@@ -58,6 +64,14 @@ uint64_t upMutexSysCall(uint64_t id);
 uint64_t downMutexSysCall(uint64_t id);
 
 uint64_t getCurrentPidSysCall();
+
+uint64_t createSemaphoreSysCall(uint64_t start);
+
+uint64_t endSemaphoreSysCall(uint64_t id);
+
+uint64_t upSemaphoreSysCall(uint64_t id);
+
+uint64_t downSemaphoreSysCall(uint64_t id);
 
 
 

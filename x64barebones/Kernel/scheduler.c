@@ -245,24 +245,6 @@ int isThreadBlocked(threadState state) {
 	}
 	return 0;
 }
-/*
-void printAllProcess() {
-	schedulerNode * node = processQueue;
-	while(node != NULL && node->process->pid == 0)
-		node = node->next;
-	
-	if(queueSize < 1){
-		return;
-	}
-	do{
-		if(node->process->pid){
-			print("Name: "); print(node->process->name); printTab(); print("PID: "); print(strnum(node->process->pid,char str[BUFFER_SIZE],10)); printTab();
-			print("State: "); print(getStatus(node->process->state)); printTab(); print("Threads: "); print(strnum(node->process->threadSize,char str1[BUFFER_SIZE],10)); newLine();
-		}
-		node = node->next;
-	}while(node->process->pid != currentProcess->process->pid);
-}
-*/
 
 /* Threads */
 
@@ -283,7 +265,6 @@ void nextThread() {
 	if(currentProcess->process->currentThread->thread->state == T_RUNNING) {
 		currentProcess->process->currentThread->thread->state = T_READY;
 	}
-	//currentProcess->process->currentThread->thread->state = T_READY;
 	
 	while(currentProcess->process->currentThread->next->thread->state != T_READY) {
 		currentProcess->process->currentThread = currentProcess->process->currentThread->next;

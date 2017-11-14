@@ -77,14 +77,20 @@ int getCurrentPid() {
 	return systemCall(SYS_CALL_CURRENT_PID, 0, 0, 0);
 }
 
-
-
-
-
-
-
-/*
-void * memoryManagement(int memoryCode, unsigned int nbytes){
-	return (void *) systemCall(SYS_CALL_MEMORY,memoryCode,0,nbytes);
+int createSemaphore(int start) {
+	return systemCall(SYS_CALL_CREATE_SEMAPHORE, start, 0, 0);
 }
-*/
+
+void endSemaphore(int id) {
+	systemCall(SYS_CALL_END_SEMAPHORE, id, 0, 0);
+}
+
+void semaphoreUp(int id) {
+	systemCall(SYS_CALL_UP_SEMAPHORE, id, 0, 0);
+}
+
+void semaphoreDown(int id) {
+	systemCall(SYS_CALL_DOWN_SEMAPHORE, id, 0, 0);
+	yield();
+}
+
