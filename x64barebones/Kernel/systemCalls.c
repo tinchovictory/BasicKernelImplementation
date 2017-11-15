@@ -7,6 +7,7 @@
 #include <mutex.h>
 #include <semaphores.h>
 #include <process.h>
+#include <pipefs.h>
 
 int writeToVideo(void * buf, uint64_t nBytes);
 int writeToMyScreen(void * buf, uint64_t nBytes);
@@ -175,7 +176,7 @@ uint64_t downSemaphoreSysCall(uint64_t id) {
 
 
 uint64_t createPipeSysCall(uint64_t fromPid, uint64_t toPid){
-	return do_pipe(fromPid,toPid);
+	return (uint64_t) do_pipe(fromPid,toPid);
 }
 
 uint64_t sendSysCall(char * name, char * buff){
@@ -276,11 +277,11 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2,
 			return downSemaphoreSysCall(param1);
 		case SYS_CALL_SEND:
 			/* param1: name, param2: buff */
-			return sendSysCall(param1, param2);
+			return sendSysCall((char *)param1, (char *) param2);
 		case SYS_CALL_RECEIVE:
 			/* param1: name, param2: buff */
-			return receiveSysCall(param1, param2);
-		case SYS_CALL_CREATE:
+			return receiveSysCall((char *)param1, (char *)param2);
+		case SYS_CALL_CREATE_PIPE:
 			/* param1: fromPid, param2: toPid */
 			return createPipeSysCall(param1, param2);
 	}

@@ -97,15 +97,15 @@ void semaphoreDown(int id) {
 }
 
 char * createPipe(int fromPid, int toPid){
-	return systemCall(SYS_CALL_CREATE_PIPE, fromPid, toPid, 0);
+	return (char *)systemCall(SYS_CALL_CREATE_PIPE, fromPid, toPid, 0);
 }
 
 void send(char * name, char * buff){
-	systemCall(SYS_CALL_SEND,name,buff,0);
+	systemCall(SYS_CALL_SEND,(uint64_t)name,(uint64_t)buff,0);
 }
 
 void receive(char * name, char * buff){
-	systemCall(SYS_CALL_RECEIVE,name,buff,0);
+	systemCall(SYS_CALL_RECEIVE,(uint64_t)name,(uint64_t)buff,0);
 	yield();
 }
 

@@ -2,8 +2,8 @@
 #include <string.h>
 #include <systemCalls.h>
 #include <philosophers.h>
-#include <prodcons.h>
 
+void shell();
 typedef int (*EntryPoint)();
 
 void test() {
@@ -54,14 +54,15 @@ void processComand(char * buffer){
 	}else if(!strcmp("philosophers",buffer)){
 		//run(philosophers, name);
 	}else if(startsWith("prodcons",buffer)){
-		char * name = (char *) malloc(sizeof(char)*10);
-		name[0] = 't';name[1] = 'e';name[2] = 's';name[3] = 't';name[4] = 0;
-		run(prodcons, name);
+		//TODO
 	}else if(!strcmp("test",buffer)){
 		char * name = (char *) malloc(sizeof(char)*10);
 		name[0] = 't';name[1] = 'e';name[2] = 's';name[3] = 't';name[4] = 0;
 		run(test, name);
-		//run(prodcons);
+	}else if(!strcmp("new shell",buffer)){
+		char * name = (char *) malloc(sizeof(char)*10);
+		name[0] = 's';name[1] = 'h';name[2] = 'e';name[3] = 'l';name[4] = 'l';name[5] = 0;
+		run(shell, name);
 	}else{
 		puts("  Command not found - help for instructions");
 	}
