@@ -80,4 +80,10 @@ void semaphoreUp(int id);
 
 void semaphoreDown(int id);
 
+char * createPipe(int fromPid, int toPid);
+
+void send(char * name, char * buff);
+
+void receive(char * name, char * buff);
+
 #endif

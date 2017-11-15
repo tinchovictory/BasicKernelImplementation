@@ -68,6 +68,7 @@ void endMutex(int id) {
 
 void mutexUp(int id) {
 	systemCall(SYS_CALL_UP_MUTEX, id, 0, 0);	
+	yield();
 }
 
 void mutexDown(int id) {

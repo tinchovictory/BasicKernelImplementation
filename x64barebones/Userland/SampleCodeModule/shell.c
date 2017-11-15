@@ -4,12 +4,8 @@
 #include <philosophers.h>
 
 void shell();
+void testPipes1();
 typedef int (*EntryPoint)();
-
-void test() {
-	printf("hola\n");
-	printf("hola\n");printf("hola\n");printf("hola\n");printf("hola\n");
-}
 
 void exec(void * entryPoint) {
 	((EntryPoint)entryPoint)();
@@ -19,7 +15,7 @@ void exec(void * entryPoint) {
 }
 
 void run(void * entryPoint, char * name) {
-	int pid = pcreate(exec, entryPoint, name);
+	pcreate(exec, entryPoint, name);
 }
 
 void processComand(char * buffer){
@@ -32,6 +28,8 @@ void processComand(char * buffer){
 		printf("  ps : prints processes with attributes\n");
 		printf("  philosophers : ​prints solution to philosophers problem\n");
 		printf("  prodcons : prints solution to producer-consumer problem\n");
+		printf("  new shell : prints solution to producer-consumer problem\n");
+		printf("  pipes : prints solution to producer-consumer problem\n");
 	}
 	else if(startsWith("echo ",buffer)){
 		puts(buffer+5);
@@ -52,17 +50,21 @@ void processComand(char * buffer){
 	}else if(!strcmp("ps",buffer)){
 		ps();
 	}else if(!strcmp("philosophers",buffer)){
-		//run(philosophers, name);
-	}else if(startsWith("prodcons",buffer)){
-		//TODO
-	}else if(!strcmp("test",buffer)){
 		char * name = (char *) malloc(sizeof(char)*10);
-		name[0] = 't';name[1] = 'e';name[2] = 's';name[3] = 't';name[4] = 0;
-		run(test, name);
+		name[0] = 'p';name[1] = 'h';name[2] = 'i';name[3] = 'l';name[4] = 0;
+		run(philosophers, name);
+	}else if(!strcmp("prodcons",buffer)){
+		char * name = (char *) malloc(sizeof(char)*10);
+		name[0] = 'p';name[1] = 'r';name[2] = 'o';name[3] = 'd';name[4] = 0;
+		run(prodcons, name);
 	}else if(!strcmp("new shell",buffer)){
 		char * name = (char *) malloc(sizeof(char)*10);
 		name[0] = 's';name[1] = 'h';name[2] = 'e';name[3] = 'l';name[4] = 'l';name[5] = 0;
 		run(shell, name);
+	}else if(!strcmp("pipes",buffer)){
+		char * name = (char *) malloc(sizeof(char)*10);
+		name[0] = 'p';name[1] = 'i';name[2] = 'p';name[3] = 'e';name[4] = '1';name[5] = 0;
+		run(testPipes1, name);
 	}else{
 		puts("  Command not found - help for instructions");
 	}
@@ -228,8 +230,8 @@ int emptyCount;
 int fullCount;
 int aux = 1;
 
-int prodSleepTime = 1000000;
-int consSleepTime = 10000000;
+int prodSleepTime = 10000000;
+int consSleepTime = 100000000;
 
 int r = 0;
 int w = 0;
@@ -336,3 +338,165 @@ void control() {
 	}
 }
 
+
+/****************************************************/
+/****************************************************/
+/*******************PRODCONS*******************/
+/****************************************************/
+/****************************************************/
+
+void mySleep() {
+	int i = 0;
+	while(i<100000000) {
+		i++;
+	}
+}
+
+char * pipeName = NULL;
+char * pipeName2 = NULL;
+int ppid = -1;
+int count = 0;
+void testPipes2() {
+	char * buff = (char *) malloc(200);
+	char * buff2 = (char *) malloc(200);
+
+
+	printf("Cargando ella...\n");
+
+	printf("Afinando ella...\n");
+
+	pipeName2 = createPipe(getCurrentPid(), ppid);
+
+	while(pipeName == NULL || pipeName2 == NULL);
+
+	buff2[0] = 0;
+	while(buff2[0] == 0) {
+		receive(pipeName, buff2);
+	}
+	printf("%d - Joaquin: %s...\n", count++, buff2);
+
+
+
+	mySleep();
+
+	strcpy(buff,"Soy yo...");
+	send(pipeName2, buff);
+
+
+	buff2[0] = 0;
+	while(buff2[0] == 0) {
+		receive(pipeName, buff2);
+	}
+	printf("%d - Joaquin: %s...\n", count++, buff2);
+
+
+
+	mySleep();
+
+	strcpy(buff,"A ti ...");
+	send(pipeName2, buff);
+
+	buff2[0] = 0;
+	while(buff2[0] == 0) {
+		receive(pipeName, buff2);
+	}
+	printf("%d - Joaquin: %s...\n", count++, buff2);
+
+
+	mySleep();
+	strcpy(buff,"Porque...");
+	send(pipeName2, buff);
+
+	buff2[0] = 0;
+	while(buff2[0] == 0) {
+		receive(pipeName, buff2);
+	}
+	printf("%d - Joaquin: %s...\n", count++, buff2);
+
+
+	mySleep();mySleep();mySleep();
+
+	printf("Terminado ella\n");
+
+	mySleep();mySleep();mySleep();
+}
+
+void testPipes1() {
+	ppid = getCurrentPid();
+	char * buff = (char *) malloc(200);
+	char * buff2 = (char *) malloc(200);
+
+	/* Create process */
+	char * name = (char *) malloc(sizeof(char)*10);
+	name[0] = 'p';name[1] = 'i';name[2] = 'p';name[3] = 'e';name[4] = '2';name[5] = 0;
+	int childPid = pcreate(exec, testPipes2, name);
+
+
+	printf("Cargando joaquin...\n");
+
+	printf("Afinando joaquin...\n");
+
+	pipeName = createPipe(ppid, childPid);
+
+	while(pipeName == NULL || pipeName2 == NULL);
+
+	mySleep();
+
+	strcpy(buff,"Quien es...");
+	send(pipeName, buff);
+
+	buff2[0] = 0;
+	while(buff2[0] == 0) {
+		receive(pipeName2, buff2);
+	}
+	printf("%d - Ella: %s...\n",count++, buff2);
+
+
+
+
+	mySleep();
+
+	strcpy(buff,"Que vienes a buscar...");
+	send(pipeName, buff);
+
+	buff2[0] = 0;
+	while(buff2[0] == 0) {
+		receive(pipeName2, buff2);
+	}
+	printf("%d - Ella: %s...\n",count++, buff2);
+
+
+
+
+	mySleep();
+
+	strcpy(buff,"Ya es tarde ...");
+	send(pipeName, buff);
+
+	buff2[0] = 0;
+	while(buff2[0] == 0) {
+		receive(pipeName2, buff2);
+	}
+	printf("%d - Ella: %s...\n", count++, buff2);
+
+
+
+	mySleep();
+
+	strcpy(buff,"Porque ahora soy yo la que quiere estar sin ti ...");
+	send(pipeName, buff);
+
+	buff2[0] = 0;
+	while(buff2[0] == 0) {
+		receive(pipeName2, buff2);
+	}
+	printf("%d - Ella: %s...\n", count++, buff2);
+
+
+	mySleep();mySleep();mySleep();
+
+	printf("Terminado el\n");
+
+	mySleep();mySleep();mySleep();
+
+}

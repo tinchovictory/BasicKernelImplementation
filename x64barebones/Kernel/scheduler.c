@@ -163,7 +163,6 @@ void blockThread(int pid, int pthread, threadState blockType) {
 	if(allThreadsAreBlocked(process)) {
 		blockProcess(pid,getBlockProcessType(blockType));
 	}
-
 }
 
 void unblockThread(int pid, int pthread, threadState blockType) {
@@ -184,7 +183,6 @@ void unblockAllThreads(int pid, threadState blockType) {
 	while(threadsCount < process->threadSize) {
 		if(threadLib->thread->state == blockType) {
 			threadLib->thread->state = T_READY;
-			//ncPrint("-unblock-");
 			unblockProcess(pid, getBlockProcessType(blockType));
 		}
 		threadLib = threadLib->next;
@@ -410,80 +408,3 @@ void printPsHeader() {
 	print("PID");printTab();print("Command");printTab();print("#Threads");printTab();print("PPID");printTab();print("State");
 	newLine();
 }
-
-/* - Debuging - */
-/*void printProcessState() {
-	int i;
-	schedulerNode * node = processQueue;
-	ncNewline();
-	for(i = 0; i < queueSize; i++) {
-		printProcessState(node->process);
-		node = node->next;
-	}
-}
-
-void printThreadStatus(threadState state){
-	switch(state){
-		case T_READY:
-			ncPrint("READY");
-		case T_RUNNING:
-			ncPrint("RUNNING");
-		case T_BLOCKED:
-			ncPrint("BLOCKED");
-		default:
-			ncPrint("DEAD");
-	}
-}
-
-void printThread(threadNode  * thread){
-	ncPrint("Thread id: ");ncPrintDec(thread->pthread);ncNewline();
-	ncPrint("Thread status: ");printThreadStatus(thread->state);ncNewline();
-}
-
-void printProcessStatus(processState state){
-	switch(state){
-		case READY:
-			ncPrint("READY");
-		case RUNNING:
-			ncPrint("RUNNING");
-		case BLOCKED:
-			ncPrint("BLOCKED");
-		default:
-			ncPrint("DEAD");
-	}
-}
-
-void printProcess(processNode * process){
-	
-	ncPrint("Process pid: "); ncPrintDec(process->pid);ncNewline();
-	ncPrint("Process status: ");printProcessStatus(process->state);ncNewline();
-
-	threadLibrary  * lib = process->threadLibrary;
-	while(lib != NULL){
-		ncPrint("   ");printThread(lib->thread);ncNewline();
-		lib = lib->next;
-	}
-}
-
-void printProcessPID(int pid){
-	schedulerQueue process = processQueue;
-	while(processQueue != NULL){
-		if(process->process->pid == pid){
-			printProcess(process->process);
-			return;
-		}
-		process = process->next;
-	}
-}
-
-void printAllProcess(int mode){
-	if(processQueue == NULL){
-		return;
-	}
-	schedulerQueue queue = processQueue;
-	while(queue->process != NULL){
-		printProcess(queue->process);
-		queue = queue->next;
-	}
-}
-*/

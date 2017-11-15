@@ -2,6 +2,8 @@
 #include <memoryManager.h>
 #include <scheduler.h>
 
+#include <naiveConsole.h>
+
 static int counter = 0;
 static semaphoreNode * list = NULL;
 
@@ -42,6 +44,7 @@ void updateSemaphoreStatus(int id, semaphoreActions action) {
 	if(semaphore == NULL){
 		return;
 	}
+	//ncPrint("                                     ");ncPrintDec(semaphore->status);ncPrint(", id: ");ncPrintDec(id);ncNewline();
 	if(action == SEMAPHORE_DOWN) {
 		semaphore->status -= 1;
 	} else if(action == SEMAPHORE_UP) {
