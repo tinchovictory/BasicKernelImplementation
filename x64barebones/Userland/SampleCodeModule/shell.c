@@ -2,6 +2,7 @@
 #include <string.h>
 #include <systemCalls.h>
 #include <philosophers.h>
+#include <prodcons.h>
 
 typedef int (*EntryPoint)();
 
@@ -53,7 +54,9 @@ void processComand(char * buffer){
 	}else if(!strcmp("philosophers",buffer)){
 		//run(philosophers, name);
 	}else if(startsWith("prodcons",buffer)){
-		//TODO
+		char * name = (char *) malloc(sizeof(char)*10);
+		name[0] = 't';name[1] = 'e';name[2] = 's';name[3] = 't';name[4] = 0;
+		run(prodcons, name);
 	}else if(!strcmp("test",buffer)){
 		char * name = (char *) malloc(sizeof(char)*10);
 		name[0] = 't';name[1] = 'e';name[2] = 's';name[3] = 't';name[4] = 0;
