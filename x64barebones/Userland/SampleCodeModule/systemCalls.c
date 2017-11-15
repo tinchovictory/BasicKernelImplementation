@@ -32,12 +32,12 @@ void ps(){
 	systemCall(SYS_CALL_PS, 1, 0, 0);
 }
 
-int pcreate(void * entryPoint, char * name) {
-	return systemCall(SYS_CALL_CREATE_PROCESS, (uint64_t) entryPoint, (uint64_t) name, 0);
+int pcreate(void * exec, void * entryPoint, char * name) {
+	return systemCall(SYS_CALL_CREATE_PROCESS, (uint64_t) exec, (uint64_t) entryPoint, (uint64_t) name);
 }
 
-int pcreateBackground(void * entryPoint, char * name) {
-	return systemCall(SYS_CALL_CREATE_PROCESS_BACKGROUND, (uint64_t) entryPoint, (uint64_t) name, 0);
+int pcreateBackground(void * exec, void * entryPoint, char * name) {
+	return systemCall(SYS_CALL_CREATE_PROCESS_BACKGROUND, (uint64_t) exec, (uint64_t) entryPoint, (uint64_t) name);
 }
 
 void exit() {
@@ -46,14 +46,16 @@ void exit() {
 
 void pkill(int pid) {
 	systemCall(SYS_CALL_END_PROCESS, pid, 0, 0);
+	yield();
 }
 
-int tcreate(int pid, void * entryPoint) {
-	return (uint64_t) systemCall(SYS_CALL_CREATE_THREAD, pid, (uint64_t) entryPoint, 0);
+int tcreate(int pid, void * exec, void * entryPoint) {
+	return (uint64_t) systemCall(SYS_CALL_CREATE_THREAD, pid, (uint64_t) exec, (uint64_t) entryPoint);
 }
 
 void tkill(int pid, int pthread) {
 	systemCall(SYS_CALL_END_THREAD, pid, pthread, 0);
+	yield();
 }
 
 int createMutex() {

@@ -22,11 +22,11 @@
 		struct libNode * next;
 	} threadLibrary;
 
-	threadNode * createThread(void * entryPoint, int currentPThread);
+	threadNode * createThread(void * exec, void * entryPoint, int currentPThread);
 
-	void * fillStackFrame(void * entryPoint, void * baseStack);
+	void * fillStackFrame(void * exec, void * entryPoint, void * baseStack);
 
-	int addThreadToProcess(int pid, void * entryPoint);
+	int addThreadToProcess(int pid, void * exec, void * entryPoint);
 
 	void freeThreadLibrary(threadLibrary * library, int threadSize);
 

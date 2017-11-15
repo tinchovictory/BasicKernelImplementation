@@ -2,12 +2,24 @@
 #include <string.h>
 #include <systemCalls.h>
 #include <philosophers.h>
+#include <prodcons.h>
 
+typedef int (*EntryPoint)();
+
+void test() {
+	printf("hola\n");
+	printf("hola\n");printf("hola\n");printf("hola\n");printf("hola\n");
+}
+
+void exec(void * entryPoint) {
+	((EntryPoint)entryPoint)();
+	//kill;	
+	exit();
+	//while(1);
+}
 
 void run(void * entryPoint, char * name) {
-	int pid = pcreate(entryPoint, name);
-	//foreground
-	//killprocess
+	int pid = pcreate(exec, entryPoint, name);
 }
 
 void processComand(char * buffer){
@@ -42,6 +54,13 @@ void processComand(char * buffer){
 	}else if(!strcmp("philosophers",buffer)){
 		//run(philosophers, name);
 	}else if(startsWith("prodcons",buffer)){
+		char * name = (char *) malloc(sizeof(char)*10);
+		name[0] = 't';name[1] = 'e';name[2] = 's';name[3] = 't';name[4] = 0;
+		run(prodcons, name);
+	}else if(!strcmp("test",buffer)){
+		char * name = (char *) malloc(sizeof(char)*10);
+		name[0] = 't';name[1] = 'e';name[2] = 's';name[3] = 't';name[4] = 0;
+		run(test, name);
 		//run(prodcons);
 	}else{
 		puts("  Command not found - help for instructions");
@@ -99,7 +118,7 @@ void philosophers() {
 		//initialize philosophers
 		philosopherId[i] = i;
 		philoState[i] = THINKING;
-		philosopherId[i] = tcreate(pid, philosopher);
+		philosopherId[i] = tcreate(pid, exec, philosopher);
 	}
 	printf("running\n");
 
@@ -225,8 +244,8 @@ void prodcons() {
 	fullCount = createSemaphore(0);
 	
 	//Create threads
-	producerThread = tcreate(pid, producer);
-	consumerThread = tcreate(pid, consumer);
+	producerThread = tcreate(pid, exec, producer);
+	consumerThread = tcreate(pid, exec, consumer);
 
 	control();
 }

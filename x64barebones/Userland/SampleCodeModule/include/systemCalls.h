@@ -47,15 +47,15 @@ void free(void * memPosition);
 
 void ps();
 
-int pcreate(void * entryPoint, char * name);
+int pcreate(void * exec, void * entryPoint, char * name);
 
-int pcreateBackground(void * entryPoint, char * name);
+int pcreateBackground(void * exec, void * entryPoint, char * name);
 
 void exit();
 
 void pkill(int pid);
 
-int tcreate(int pid, void * entryPoint);
+int tcreate(int pid, void * exec, void * entryPoint);
 
 void tkill(int pid, int pthread);
 

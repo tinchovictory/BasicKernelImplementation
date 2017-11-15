@@ -91,22 +91,23 @@ int writeToMyScreen(void * buf, uint64_t nBytes) {
 	return i;
 }
 
-uint64_t pcreate(void * entryPoint, char * name) {
-	int pid = addProcess(entryPoint, name);
+uint64_t pcreate(void * exec, void * entryPoint, char * name) {
+	int pid = addProcess(exec, entryPoint, name);
 	loadScreen(pid);
 	return pid;
 }
 
-uint64_t pcreateBackground(void * entryPoint, char * name) {
-	return addProcess(entryPoint, name);
+uint64_t pcreateBackground(void * exec, void * entryPoint, char * name) {
+	return addProcess(exec, entryPoint, name);
 }
 
-uint64_t tcreate(uint64_t pid, void * entryPoint){
-	return addThreadToProcess(pid, entryPoint);
+uint64_t tcreate(uint64_t pid, void * exec, void * entryPoint){
+	return addThreadToProcess(pid, exec, entryPoint);
 }
 
 uint64_t pkill(uint64_t pid){
 	removeScreen(pid);
+	loadScreen(getParentPid(pid));
 	removeProcess(pid);
 	return 1;
 }
@@ -219,20 +220,20 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2,
 			return 1;//HAY QUE HACERLO
 
 		case SYS_CALL_CREATE_PROCESS:
-			/* param1: entryPoint, param2: name */
-			return pcreate((void *) param1, (char *) param2);
+			/* param1: exec, param2: entryPoint, param3: name */
+			return pcreate((void *) param1, (void *) param2, (char *) param3);
 
 		case SYS_CALL_CREATE_PROCESS_BACKGROUND:
-			/* param1: entryPoint, param2: name */
-			return pcreateBackground((void *) param1, (char *) param2);
+			/* param1: exec, param2: entryPoint, param3: name */
+			return pcreateBackground((void *) param1, (void *) param2, (char *) param3);
 
 		case SYS_CALL_END_PROCESS:
 			/* param1: pid */
 			return pkill(param1);
 
 		case SYS_CALL_CREATE_THREAD:
-			/* parm1: pid, param2: entryPoint */
-			return tcreate(param1, (void *) param2);
+			/* parm1: pid, param2: exec, param3: entryPoint */
+			return tcreate(param1, (void *) param2, (void *) param3);
 
 		case SYS_CALL_END_THREAD:
 			/* param1: pid, param2: pthread */

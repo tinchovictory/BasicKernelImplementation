@@ -107,5 +107,3 @@ void freeHeap(heapNode * node) {
 	deallocate(node, sizeof(heapNode));
 	freeHeap(next);
 }
-
-
