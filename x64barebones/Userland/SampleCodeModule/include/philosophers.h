@@ -3,6 +3,8 @@
 
 #define PHILOSOPHERS_COUNT 3
 
+#define BUFFERSIZE 100
+
 typedef enum {HUNGRY, THINKING, EATING} State;
 
 void philosophers();
@@ -23,4 +25,15 @@ void render();
 
 void myTestSleep(int wakeUpCall);
 
+void prodcons();
+
+void insertItem(char c);
+
+char removeItem();
+
+void producer();
+
+void consumer();
+
+void control();
 #endif

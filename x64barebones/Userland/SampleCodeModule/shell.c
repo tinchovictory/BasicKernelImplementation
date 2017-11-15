@@ -51,15 +51,14 @@ void processComand(char * buffer){
 	}else if(!strcmp("ps",buffer)){
 		ps();
 	}else if(!strcmp("philosophers",buffer)){
-		char * name = (char *) malloc(sizeof(char)*10);
-		name[0] = 'p';name[1] = 'h';name[2] = 'i';name[3] = 'l';name[4] = 'o';name[5] = 's';name[6] = 'o';name[7] = 0;
-		run(philosophers, name);
+		//run(philosophers, name);
 	}else if(startsWith("prodcons",buffer)){
 		//TODO
 	}else if(!strcmp("test",buffer)){
 		char * name = (char *) malloc(sizeof(char)*10);
 		name[0] = 't';name[1] = 'e';name[2] = 's';name[3] = 't';name[4] = 0;
 		run(test, name);
+		//run(prodcons);
 	}else{
 		puts("  Command not found - help for instructions");
 	}
@@ -89,10 +88,9 @@ void shell(){
 }
 
 
-
 /****************************************************/
 /****************************************************/
-/****************** PHILOSOPHERS.c ******************/
+/*******************PHILOSOPHERS*******************/
 /****************************************************/
 /****************************************************/
 
@@ -211,3 +209,126 @@ void myTestSleep(int wakeUpCall) {
 		i++;
 	}
 }
+
+/****************************************************/
+/****************************************************/
+/*******************PRODCONS*******************/
+/****************************************************/
+/****************************************************/
+
+int producerThread;
+int consumerThread;
+
+int itemMutex;
+int emptyCount;
+int fullCount;
+int aux = 1;
+
+int prodSleepTime = 1000000;
+int consSleepTime = 10000000;
+
+int r = 0;
+int w = 0;
+char buffer[BUFFERSIZE];
+int cant = 0;
+
+void prodcons() {
+	int pid = getCurrentPid();
+
+	//Semaphore creation
+	itemMutex = createMutex();
+	emptyCount = createSemaphore(BUFFERSIZE);
+	fullCount = createSemaphore(0);
+	
+	//Create threads
+	producerThread = tcreate(pid, exec, producer);
+	consumerThread = tcreate(pid, exec, consumer);
+
+	control();
+}
+
+void producer() {
+
+	while (1) {
+		myTestSleep(prodSleepTime);
+
+		char item = (char)aux;
+		aux++;
+		cant++;
+		printf("Produce %d items:%d\n", item, cant);
+
+		//Decrement the count of empty slots in the buffer (semaphore goes down)
+		//Locks when the remaining empty slots are zero
+		semaphoreDown(emptyCount);
+		mutexDown(itemMutex);
+
+		insertItem(item);
+		mutexUp(itemMutex);
+
+		//Increment the count of full slots in the buffer (semaphore goes up)
+		semaphoreUp(fullCount);
+	}
+}
+
+void consumer() {
+	int item;
+
+	while (1) {
+		myTestSleep(consSleepTime);
+
+		//Decrement the count of full slots in the buffer (semaphore goes down)
+		//Locks when there is no more information in the buffer
+		semaphoreDown(fullCount);
+		mutexDown(itemMutex);
+
+		item = removeItem();
+		mutexUp(itemMutex);
+
+		//Increment the count of empty slots in the buffer (semaphore goes up)
+		semaphoreUp(emptyCount);
+		cant--;
+		printf("Consume %d items:%d\n", item, cant);
+	}
+}
+
+void insertItem(char c) {
+	buffer[w] = c;
+	w = (w + 1) % BUFFERSIZE;
+}
+
+char removeItem() {
+	char result = buffer[r];
+	r = (r + 1) % BUFFERSIZE;
+	return result;
+}
+
+void control() {
+	int end = 0;
+
+	while(!end) {
+		int c = getchar();
+
+		switch(c) {
+			case 'a':
+				prodSleepTime = prodSleepTime * 10;
+			break;
+
+			case 'z':
+				prodSleepTime = prodSleepTime / 10;
+			break;
+
+			case 's':
+				consSleepTime = consSleepTime * 10;
+			break;
+
+			case 'x':
+				consSleepTime = consSleepTime / 10;
+			break;
+
+			case 'q':
+				end = 1;
+			break;
+		}
+	}
+}
+
