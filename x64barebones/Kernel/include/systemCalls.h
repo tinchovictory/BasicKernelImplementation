@@ -23,6 +23,9 @@
 #define SYS_CALL_END_SEMAPHORE 18
 #define SYS_CALL_UP_SEMAPHORE 19
 #define SYS_CALL_DOWN_SEMAPHORE 20
+#define SYS_CALL_SEND 21
+#define SYS_CALL_RECEIVE 22
+#define SYS_CALL_CREATE_PIPE 23
 
 //#define MEMORY_ASIGN_CODE 0
 //#define MEMORY_FREE_CODE 1
@@ -73,6 +76,11 @@ uint64_t upSemaphoreSysCall(uint64_t id);
 
 uint64_t downSemaphoreSysCall(uint64_t id);
 
+uint64_t createPipeSysCall(uint64_t fromPid, uint64_t toPid);
+
+uint64_t sendSysCall(char * name, char * buff);
+
+uint64_t receiveSysCall(char * name, char * buff);
 
 
 uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2, uint64_t param3); // asm function

@@ -173,6 +173,22 @@ uint64_t downSemaphoreSysCall(uint64_t id) {
 }
 
 
+uint64_t createPipeSysCall(uint64_t fromPid, uint64_t toPid){
+	return do_pipe(fromPid,toPid);
+}
+
+uint64_t sendSysCall(char * name, char * buff){
+	writeToPipe(name, buff);
+	return 1;
+}
+
+uint64_t receiveSysCall(char * name, char * buff){
+	readFromPipe(name,buff);
+	return 1;
+}
+
+
+
 
 uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2, uint64_t param3){
 
@@ -257,6 +273,15 @@ uint64_t systemCall(uint64_t systemCallNumber, uint64_t param1, uint64_t param2,
 		case SYS_CALL_DOWN_SEMAPHORE:
 			/* param1: id */			
 			return downSemaphoreSysCall(param1);
+		case SYS_CALL_SEND:
+			/* param1: name, param2: buff */
+			return sendSysCall(param1, param2);
+		case SYS_CALL_RECEIVE:
+			/* param1: name, param2: buff */
+			return receiveSysCall(param1, param2);
+		case SYS_CALL_CREATE:
+			/* param1: fromPid, param2: toPid */
+			return createPipeSysCall(param1, param2);
 	}
 
 	

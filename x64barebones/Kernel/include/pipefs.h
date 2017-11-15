@@ -18,10 +18,13 @@
 
 
 	char * do_pipe(int fromPid, int toPid);
-	pipeNode * createPipe(int fromPid, int toPid);
-	pipeNode * addPipeToList(pipeNode * list, pipeNode * pipe);
 	void writeToPipe(char name[NAME_SIZE], char * buff);
 	void readFromPipe(char name[NAME_SIZE], char * buff);
+	
+
+	pipeNode * createPipe(int fromPid, int toPid);
+	pipeNode * addPipeToList(pipeNode * list, pipeNode * pipe);
+	
 	char * pointerPosition(char * currentPointer, char * buffer);
 	pipeNode * getPipe(char name[NAME_SIZE]);
 	int equalName(char * str1, char * str2);

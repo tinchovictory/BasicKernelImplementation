@@ -94,3 +94,16 @@ void semaphoreDown(int id) {
 	yield();
 }
 
+char * createPipe(int fromPid, int toPid){
+	return systemCall(SYS_CALL_CREATE_PIPE, fromPid, toPid, 0);
+}
+
+void send(char * name, char * buff){
+	systemCall(SYS_CALL_SEND,name,buff,0);
+}
+
+void receive(char * name, char * buff){
+	systemCall(SYS_CALL_RECEIVE,name,buff,0);
+	yield();
+}
+
