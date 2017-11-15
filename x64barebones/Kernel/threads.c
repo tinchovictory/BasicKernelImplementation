@@ -4,16 +4,16 @@
 #include <memoryManager.h>
 #include <process.h>
 #include <scheduler.h>
+#include <screenLoader.h>
 
-
-int addThreadToProcess(int pid, void * entryPoint) {
+int addThreadToProcess(int pid, void * exec, void * entryPoint) {
 	processNode * process = getProcessWithPid(pid);
 
 	if(process == NULL) {
 		return -1;
 	}
 
-	threadNode * thread = createThread(entryPoint, process->currentPThread);
+	threadNode * thread = createThread(exec, entryPoint, process->currentPThread);
 
 	threadLibrary * node = (threadLibrary *) allocate(PAGE_SIZE);
 
@@ -37,12 +37,12 @@ int addThreadToProcess(int pid, void * entryPoint) {
 //static int currentPthread = 0; // TIENE QUE ESTAR EN PROCESS
 
 
-threadNode * createThread(void * entryPoint, int currentPThread) {
+threadNode * createThread(void * exec, void * entryPoint, int currentPThread) {
 	/* Create process in memory, asign a base pointer, initialize stack frame */
 	threadNode * thread = (threadNode *) allocate(PAGE_SIZE);
 	thread->entryPoint = entryPoint;
 	thread->baseStack = (void *) allocate(PAGE_SIZE * NUMBER_OF_PAGES);
-	thread->userStack = fillStackFrame(entryPoint, thread->baseStack);
+	thread->userStack = fillStackFrame(exec, entryPoint, thread->baseStack);
 	thread->pthread = currentPThread;
 	thread->state = T_READY;
 
@@ -52,7 +52,7 @@ threadNode * createThread(void * entryPoint, int currentPThread) {
 }
 
 /* fillStackFrame taken form RowDaBoat */
-void * fillStackFrame(void * entryPoint, void * baseStack) {
+void * fillStackFrame(void * exec, void * entryPoint, void * baseStack) {
 	StackFrame * frame = (StackFrame*)baseStack - 1;
 	frame->gs =		0x001;
 	frame->fs =		0x002;
@@ -65,13 +65,15 @@ void * fillStackFrame(void * entryPoint, void * baseStack) {
 	frame->r9 =		0x009;
 	frame->r8 =		0x00A;
 	frame->rsi =	0x00B;
-	frame->rdi =	0x00C;
+	//frame->rdi =	0x00C;
+	frame->rdi =	(uint64_t)entryPoint;
 	frame->rbp =	0x00D;
 	frame->rdx =	0x00E;
 	frame->rcx =	0x00F;
 	frame->rbx =	0x010;
 	frame->rax =	0x011;
-	frame->rip =	(uint64_t)entryPoint;
+	//frame->rip =	(uint64_t)entryPoint;
+	frame->rip =	(uint64_t)exec;
 	frame->cs =		0x008;
 	frame->eflags = 0x202;
 	frame->rsp =	(uint64_t)&(frame->base);

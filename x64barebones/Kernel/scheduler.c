@@ -62,10 +62,10 @@ void * switchKernelToUser () {
 	return process->currentThread->thread->userStack;
 }
 
-int addProcess(void * entryPoint, char * name) {
+int addProcess(void * exec, void * entryPoint, char * name) {
 	processNode * process = createProcess(name, getCurrentPid());
 	addProcessToQueue(process);
-	addThreadToProcess(process->pid, entryPoint);
+	addThreadToProcess(process->pid, exec, entryPoint);
 	return process->pid;
 }
 
@@ -197,10 +197,10 @@ void yieldSwitch() {
 	if(currentProcess == NULL) {
 		return;
 	}
-	if(isProcessBlocked(currentProcess->process->state)) {
+	if(isProcessBlocked(currentProcess->process->state) || currentProcess->process->state == DEAD ) {
 		numberOfTicks = QUANTUM;
 		runScheduler();
-	} else if(isThreadBlocked(currentProcess->process->currentThread->thread->state)) {
+	} else if(isThreadBlocked(currentProcess->process->currentThread->thread->state) || currentProcess->process->currentThread->thread->state == T_DEAD) {
 		currentProcess->process->threadTick = THREAD_QUANTUM;
 		runScheduler();
 	}
@@ -215,6 +215,11 @@ int getCurrentPid() {
 
 int getCurrentPthread() {
 	return currentProcess->process->currentThread->thread->pthread;
+}
+
+int getParentPid(int pid) {
+	processNode * process = getProcessWithPid(pid);
+	return process->ppid;
 }
 
 processState getBlockProcessType(threadState state) {
@@ -248,6 +253,7 @@ int isThreadBlocked(threadState state) {
 	}
 	return 0;
 }
+
 
 /* Threads */
 

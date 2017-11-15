@@ -32,7 +32,7 @@
 	void addProcessToQueue(processNode * p);
 
 	/* Create process with entryPoint */
-	int addProcess(void * entryPoint, char * name);
+	int addProcess(void * exec, void * entryPoint, char * name);
 
 	/* Return the entry point of the process set as current */
 	void * currentProcessEntryPoint();
@@ -79,6 +79,8 @@
 	int isProcessBlocked(processState state);
 
 	int isThreadBlocked(threadState state);
+
+	int getParentPid(int pid);
 
 
 

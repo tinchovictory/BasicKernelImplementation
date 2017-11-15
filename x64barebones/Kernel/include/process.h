@@ -52,7 +52,7 @@
 	char * getStatus(processState state);
 
 	/* Create a stack frame for proces initialization */
-	void * fillStackFrame(void * entryPoint, void * baseStack);
+	//void * fillStackFrame(void * entryPoint, void * baseStack);
 
 	void * pmalloc(int nBytes);
 
